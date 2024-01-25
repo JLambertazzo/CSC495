@@ -8,6 +8,7 @@ builder.Services.Configure<ClrApiDatabaseSettings>(
     builder.Configuration.GetSection("ClrApiDatabase"));
 
 builder.Services.AddSingleton<UsersService>();
+builder.Services.AddControllers();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -22,6 +23,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseRouting();
+app.MapControllers();
 
 // app.UseHttpsRedirection();
 
