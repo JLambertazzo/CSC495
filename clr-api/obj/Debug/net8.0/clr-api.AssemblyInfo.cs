@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("clr-api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bf2e03af0f0d94235d6e4ed2cd8891a1fa53e516")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3e5068e5b99fdd217145791a71442bc73ce25a8b")]
 [assembly: System.Reflection.AssemblyProductAttribute("clr-api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("clr-api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

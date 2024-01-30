@@ -1,5 +1,6 @@
 using ClrApi.Models;
 using ClrApi.Services;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClrApi.Controllers;
@@ -29,13 +30,33 @@ public class UsersController : ControllerBase
 
         return user;
     }
-
     [HttpPost]
-    public async Task<IActionResult> Post(User newUser)
+    public async Task<ActionResult<User>> Post(User newUser)
     {
-        await _usersService.CreateAsync(newUser);
-
-        return CreatedAtAction(nameof(Get), new { id = newUser.Id }, newUser);
+        var user = await _usersService.GetByUsername(newUser.Username);
+        // If user doesn't exist, sign up
+        if (user is null)
+        {
+            await _usersService.CreateAsync(newUser);
+            return CreatedAtAction(nameof(Get), new { id = newUser.Id }, newUser);
+        }
+        // If user exists, attempt to sign in 
+        else
+        {
+            if (newUser.Password == user.Password)
+            {
+                // Logging in
+                return user;
+            }
+            else
+            {
+                // Wrong password
+                return NotFound();
+            }
+            
+        }
+        
+        
     }
 
     [HttpPut("{id:length(24)}")]
