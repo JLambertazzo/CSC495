@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Julien\\Documents\\code\\CSC495\\clr-api\\clr-api.csproj": {}
+    "/Users/Judy/Documents/programming/CSC495/clr-api/clr-api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Julien\\Documents\\code\\CSC495\\clr-api\\clr-api.csproj": {
+    "/Users/Judy/Documents/programming/CSC495/clr-api/clr-api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Julien\\Documents\\code\\CSC495\\clr-api\\clr-api.csproj",
+        "projectUniqueName": "/Users/Judy/Documents/programming/CSC495/clr-api/clr-api.csproj",
         "projectName": "clr-api",
-        "projectPath": "C:\\Users\\Julien\\Documents\\code\\CSC495\\clr-api\\clr-api.csproj",
-        "packagesPath": "C:\\Users\\Julien\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Julien\\Documents\\code\\CSC495\\clr-api\\obj\\",
+        "projectPath": "/Users/Judy/Documents/programming/CSC495/clr-api/clr-api.csproj",
+        "packagesPath": "/Users/Judy/.nuget/packages/",
+        "outputPath": "/Users/Judy/Documents/programming/CSC495/clr-api/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Julien\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/Users/Judy/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -70,7 +70,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
