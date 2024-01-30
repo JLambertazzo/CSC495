@@ -7,6 +7,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<ClrApiDatabaseSettings>(
     builder.Configuration.GetSection("ClrApiDatabase"));
 
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
+        });
+});
+
 builder.Services.AddSingleton<UsersService>();
 builder.Services.AddControllers();
 
@@ -27,6 +37,6 @@ if (app.Environment.IsDevelopment())
 app.UseRouting();
 app.MapControllers();
 
-// app.UseHttpsRedirection();
+app.UseCors();
 
 app.Run();
