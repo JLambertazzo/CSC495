@@ -1,4 +1,4 @@
-namespace ClrApi.Models;
+namespace clr_api.Models;
 
 public class ClrApiDatabaseSettings
 {

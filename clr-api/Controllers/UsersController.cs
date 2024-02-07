@@ -1,9 +1,9 @@
-using ClrApi.Models;
-using ClrApi.Services;
+using clr_api.Models;
+using clr_api.Services;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ClrApi.Controllers;
+namespace clr_api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

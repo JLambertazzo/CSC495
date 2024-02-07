@@ -1,8 +1,8 @@
-using ClrApi.Models;
+using clr_api.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-namespace ClrApi.Services;
+namespace clr_api.Services;
 
 public class UsersService
 {

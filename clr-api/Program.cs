@@ -1,5 +1,5 @@
-using ClrApi.Models;
-using ClrApi.Services;
+using clr_api.Models;
+using clr_api.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
