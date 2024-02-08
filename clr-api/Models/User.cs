@@ -1,16 +1,21 @@
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using ThirdParty.Json.LitJson;
 
 namespace clr_api.Models;
 
-public static class UserRole
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum UserRole
 {
-    public const string Student = "student";
-    public const string Instructor = "instructor";
+    [EnumMember(Value="student")]
+    Student,
+    [EnumMember(Value="instructor")]
+    Instructor
 }
 
-public class UserCourse(string oid, string code, string role)
+public class UserCourse(string oid, string code, UserRole role)
 {
     [JsonProperty]
     public string Oid { get; set; } = oid;
@@ -19,7 +24,7 @@ public class UserCourse(string oid, string code, string role)
     public string Code { get; set; } = code;
 
     [JsonProperty]
-    public string Role { get; set; } = role;
+    public UserRole Role { get; set; } = role;
 }
 
 public class User
