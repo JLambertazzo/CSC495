@@ -6,16 +6,11 @@ namespace clr_api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ClassController : ControllerBase
+public class ClassController(ClassService classService) : ControllerBase
 {
-    private readonly ClassService _classService;
-
-    public ClassController(ClassService classService) => 
-        _classService = classService;
-
     [HttpGet]
     public async Task<List<Class>> Get() =>
-        await _classService.GetAsync();
+        await classService.GetAsync();
 
     [HttpGet("find")]
     public async Task<ActionResult<Class>> Get(string? id, string? code)
@@ -23,11 +18,11 @@ public class ClassController : ControllerBase
         Class? foundClass = null;
         if (id is not null)
         {
-            foundClass = await _classService.GetAsync(id);
+            foundClass = await classService.GetAsync(id);
         }
         else if (code is not null)
         {
-            foundClass = await _classService.GetByCode(code);
+            foundClass = await classService.GetByCode(code);
         }
 
         if (foundClass is null)
@@ -42,28 +37,28 @@ public class ClassController : ControllerBase
     public async Task<ActionResult<Class>> Post(Class newClass)
     {
         // TODO: add some uniqueness check by term
-        await _classService.CreateAsync(newClass);
+        await classService.CreateAsync(newClass);
         return CreatedAtAction(nameof(Get), new { id = newClass.Oid }, newClass);
     }
 
     [HttpPatch]
     public async Task<IActionResult> Patch(Class updatedClass)
     {
-        await _classService.UpdateAsync(updatedClass.Oid, updatedClass);
+        await classService.UpdateAsync(updatedClass.Oid, updatedClass);
         return NoContent();
     }
     
     [HttpDelete("{id:length(24)}")]
     public async Task<IActionResult> Delete(string id)
     {
-        var foundClass = await _classService.GetAsync(id);
+        var foundClass = await classService.GetAsync(id);
 
         if (foundClass is null)
         {
             return NotFound();
         }
 
-        await _classService.RemoveAsync(id);
+        await classService.RemoveAsync(id);
 
         return NoContent();
     }
