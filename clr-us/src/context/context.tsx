@@ -1,13 +1,13 @@
-import React, { ReactNode, useContext, useEffect, useState } from "react";
+import React, { ReactNode, useContext, useEffect, useState } from 'react'
 
-import { IUser } from "../types";
+import { IUser } from '../types'
 
 const userContext = React.createContext({
   user: null as IUser | null,
   setUser: ((user) => {
-    void user;
+    void user
   }) as (user: IUser | null) => void,
-});
+})
 
 export function AuthProvider({ children }: { children: ReactNode }): JSX.Element {
   const local = localStorage.getItem('user')
