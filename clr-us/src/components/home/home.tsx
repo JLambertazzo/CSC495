@@ -1,9 +1,12 @@
-import { Box } from '@mui/material'
+import { Box, Grid } from '@mui/material'
 import React, { useMemo } from 'react'
 
+import { useRedirectLogin } from '@/hooks'
+
 import useAuth from '../../context/context'
-import { useRedirectLogin } from '../../hooks'
 import { Navbar } from '../navbar/navbar'
+
+import { CourseCard } from './course-card'
 
 export const Home: React.FC = () => {
   useRedirectLogin()
@@ -11,9 +14,11 @@ export const Home: React.FC = () => {
   const userCourses = useMemo(() => user?.courses, [user])
 
   return (
-    <>
+    <Box sx={{ background: 'rgba(243, 246, 249, 0.6)', height: '100vh', width: '100%' }}>
       <Navbar />
-      <Box>{userCourses?.map((course) => <div key={course.oid}>{course.code}</div>)}</Box>
-    </>
+      <Grid container width="fit-content" m={5} gap={3}>
+        {userCourses?.map((course) => <CourseCard course={course} key={course.oid} />)}
+      </Grid>
+    </Box>
   )
 }
