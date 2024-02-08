@@ -1,26 +1,26 @@
-import { IUser } from "../../types";
-import { axios } from "../services/axios";
+import { IUser } from '../../types'
+import { axios } from '../services/axios'
 
 class LoginService {
   loginUser = (
     username: string,
     password: string,
-    setUser: (user: IUser | null) => void,
+    setUser: (user: IUser | null) => void
   ): Promise<IUser> => {
     return axios
-      .post("/Users", { username, password } )
+      .post('/Users', { username, password })
       .then((res) => {
         if (res.status === 404) {
           return 'Incorrect Password.'
         } else {
-          setUser(res.data as IUser);
+          setUser(res.data as IUser)
         }
       })
-      .catch((err) => err);
-  };
+      .catch((err) => err)
+  }
 
   logout = (setUser: (user: IUser | null) => void) => {
-    setUser(null);
-  };
+    setUser(null)
+  }
 }
-export const loginService = new LoginService();
+export const loginService = new LoginService()
