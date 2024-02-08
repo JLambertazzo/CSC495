@@ -9,4 +9,6 @@ public class ClrApiDatabaseSettings
     public string UsersCollectionName { get; set; } = null!;
     
     public string ClassCollectionName { get; set; } = null!;
+
+    public string ClrsCollectionName { get; set; } = null!;
 }
