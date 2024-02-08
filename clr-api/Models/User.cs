@@ -1,25 +1,25 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using ThirdParty.Json.LitJson;
 
 namespace clr_api.Models;
 
-public enum UserRole
+public static class UserRole
 {
-    Student,
-    Instructor
+    public const string Student = "student";
+    public const string Instructor = "instructor";
 }
 
-public class UserCourse
+public class UserCourse(string oid, string code, string role)
 {
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string? Oid { get; set; }
-    
-    [BsonElement("code")]
-    public string? Code { get; set; }
-    
-    [BsonElement("role")]
-    public UserRole Role { get; set; }
+    [JsonProperty]
+    public string Oid { get; set; } = oid;
+
+    [JsonProperty]
+    public string Code { get; set; } = code;
+
+    [JsonProperty]
+    public string Role { get; set; } = role;
 }
 
 public class User
