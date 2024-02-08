@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom'
 import useAuth from '../../context/context'
 import { loginService } from '../login/login.service'
 
-export function Navbar() {
+export const Navbar: React.FC = () => {
   const { user, setUser } = useAuth()
   const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
@@ -33,7 +33,7 @@ export function Navbar() {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h4" component="div" sx={{ flexGrow: 1, textAlign: 'center' }}>
-            CLR-US
+            CLRUS
           </Typography>
           <Button
             endIcon={<AccountCircleIcon />}
