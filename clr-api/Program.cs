@@ -19,6 +19,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddSingleton<UsersService>();
 builder.Services.AddSingleton<ClassService>();
+builder.Services.AddSingleton<CLRSService>();
 builder.Services.AddControllers();
 
 // Add services to the container.
