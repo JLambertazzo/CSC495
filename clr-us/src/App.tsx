@@ -3,7 +3,8 @@ import { CssBaseline, ThemeProvider } from '@mui/material'
 import React from 'react'
 import { Routes, Route, BrowserRouter as Router } from 'react-router-dom'
 
-import { CoursePage } from '@/components/course-page'
+import { LearnPage, QuizPage } from '@/components/course-page'
+import { RouteList } from '@/enum'
 
 import { Home } from './components/home/home'
 import { Login } from './components/login/login'
@@ -18,7 +19,10 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/:id" element={<CoursePage />} />
+            {/* In the future, the id should be replaced by something that makes sense like csc373w24 */}
+            <Route path="/:id" element={<LearnPage />} />
+            <Route path={`/:id/${RouteList.Learn}`} element={<LearnPage />} />
+            <Route path={`/:id/${RouteList.Quizzes}`} element={<QuizPage />} />
             <Route path="/login" element={<Login />} />
           </Routes>
         </Router>
@@ -26,5 +30,4 @@ function App() {
     </AuthProvider>
   )
 }
-
 export default App

@@ -10,7 +10,7 @@ import { ICourse } from '@/types'
 export const CourseCard = (props: { course: ICourse }) => {
   const navigate = useNavigate()
   const handleClick = () => {
-    navigate(`/${props.course.oid}`)
+    navigate(`/${props.course.oid}/learn`)
   }
 
   return (
