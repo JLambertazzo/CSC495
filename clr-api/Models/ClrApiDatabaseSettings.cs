@@ -11,4 +11,6 @@ public class ClrApiDatabaseSettings
     public string ClassCollectionName { get; set; } = null!;
 
     public string CLRSCollectionName { get; set; } = null!;
+
+    public string ProblemCollectionName { get; set; } = null!;
 }
