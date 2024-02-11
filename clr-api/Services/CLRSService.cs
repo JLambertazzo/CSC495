@@ -21,7 +21,7 @@ public class CLRSService
             clrApiDatabaseSettings.Value.CLRSCollectionName);
     }
 
-    public async Task<CLRS> GetAsync(int chapter, int problem) =>
+    public async Task<CLRS?> GetAsync(int chapter, int problem) =>
         await _clrsCollection.Find(x => x.Chapter == chapter && x.Problem == problem).FirstOrDefaultAsync();
 
     public async Task CreateAsync(CLRS newClrsProblem)
