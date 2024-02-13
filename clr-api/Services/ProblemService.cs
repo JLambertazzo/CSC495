@@ -47,7 +47,8 @@ public class ProblemService
             Solution = solution,
             Version = 0,
             Status = ProblemStatus.Posted,
-            Class = offeringId
+            Class = offeringId,
+            Type = ProblemType.CLRS
         };
         await _problemCollection.InsertOneAsync(newProblem);
     }
@@ -72,7 +73,8 @@ public class ProblemService
             Version = problem.Version + 1,
             Title = problem.Title,
             Class = problem.Class,
-            Latest = true
+            Latest = true,
+            Type = problem.Type
         };
         await _problemCollection.InsertOneAsync(newProblem);
         
