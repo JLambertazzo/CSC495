@@ -4,6 +4,7 @@ import React, { useMemo } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
 import { RouteList } from '@/enum'
+import { useCurrentCourse } from '@/hooks'
 import { theme } from '@/themes/theme'
 
 function Tab(props: { text: string; route: string }) {
@@ -12,9 +13,10 @@ function Tab(props: { text: string; route: string }) {
     () => location.pathname.split('/')[2] == props.route,
     [location.pathname, props.route]
   )
+  const courseId = useCurrentCourse()
   return (
     <Link
-      to={`./../${props.route}`}
+      to={`/${courseId}/${props.route}`}
       style={{
         textDecoration: 'none',
       }}
