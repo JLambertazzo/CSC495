@@ -7,10 +7,10 @@ import { Sidebar } from '@/components/navbar'
 import { useCourseCheck } from '@/hooks'
 
 const categories: { text: string; route: string }[] = [
-  { text: 'CLRS Problems', route: './clrs' },
-  { text: 'Tutorial Problems', route: './tutorial' },
-  { text: 'Lecture Problems', route: './lecture' },
-  { text: 'Other Problems', route: './other' },
+  { text: 'CLRS', route: './clrs' },
+  { text: 'Tutorial', route: './tutorial' },
+  { text: 'Lecture', route: './lecture' },
+  { text: 'Other', route: './other' },
 ]
 
 const CategoryButton = (props: { text: string; route: string; first?: boolean }) => (
@@ -41,11 +41,12 @@ export const LearnPage: React.FC = () => {
       <Sidebar />
       <Grid
         container
-        sx={{ p: 1, height: '100%', width: '30%', textAlign: 'left' }}
-        alignItems="center"
+        sx={{ p: 1, height: '100%', width: '15%', textAlign: 'left' }}
+        alignItems="baseline"
         justifyContent="center"
         direction="column"
       >
+        <Typography variant="h5">Explore Problems:</Typography>
         {categories.map(({ text, route }, i) => (
           <CategoryButton text={text} route={route} key={route} first={!i} />
         ))}
