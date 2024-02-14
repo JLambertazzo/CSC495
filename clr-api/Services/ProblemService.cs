@@ -91,10 +91,13 @@ public class ProblemService
         await _problemCollection.FindOneAndUpdateAsync(filter, update);
     }
 
-    public async Task<List<Problem>> GetByClassAsync(string offeringId) =>
-        await _problemCollection.Find(x => x.Class == offeringId && x.Latest).ToListAsync();
+    public async Task<List<Problem>> GetByClassAsync(string offeringId, ProblemStatus? status) =>
+        await _problemCollection.Find(x => x.Class == offeringId && x.Latest && (!status.HasValue || (x.Status == status))).ToListAsync();
 
     public async Task<Problem?> GetAsync(string problemId) =>
         await _problemCollection.Find(x => (x.Id == problemId || x.Source == problemId) && x.Latest).FirstOrDefaultAsync();
+
+    public async Task<List<Problem>> GetBySourceAsync(string source) =>
+        await _problemCollection.Find(x => x.Source == source || x.Id == source).ToListAsync();
 
 }
