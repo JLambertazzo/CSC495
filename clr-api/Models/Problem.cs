@@ -16,6 +16,19 @@ public enum ProblemStatus
     Endorsed
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum ProblemType
+{
+    [EnumMember(Value="CLRS")]
+    CLRS,
+    [EnumMember(Value="Tutorial")]
+    Tutorial,
+    [EnumMember(Value="Lecture")]
+    Lecture,
+    [EnumMember(Value="Other")]
+    Other
+}
+
 public class Problem
 {
     [BsonId]
@@ -45,6 +58,8 @@ public class Problem
     [BsonRepresentation(BsonType.ObjectId)]
     [BsonElement("class")]
     public string Class { get; set; } = null!;
+
+    [BsonElement("type")] public ProblemType? Type { get; set; } = null!;
 
     [BsonElement("version")]
     public int Version { get; set; } = 0;

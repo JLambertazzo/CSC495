@@ -45,9 +45,21 @@ public class ProblemController(ProblemService problemService, UsersService users
         return problem;
     }
 
+    [HttpGet("history/{id:length(24)}")]
+    public async Task<ActionResult<List<Problem>>> GetEditHistory(string id)
+    {
+        var problem = await problemService.GetAsync(id);
+        if (problem is null)
+        {
+            return NotFound();
+        }
+        return await problemService.GetBySourceAsync(problem.Source ?? id);
+    }
+        
+
     [HttpGet("class/{id:length(24)}")]
-    public async Task<ActionResult<List<Problem>>> GetByClass(string id) => 
-        await problemService.GetByClassAsync(id);
+    public async Task<ActionResult<List<Problem>>> GetByClass(string id, ProblemStatus? status) => 
+        await problemService.GetByClassAsync(id, status);
 
     [HttpPost]
     public async Task<ActionResult<Problem>> Post([FromBody] ProblemFromScratch problemFromScratch)

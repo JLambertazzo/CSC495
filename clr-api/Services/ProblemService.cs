@@ -47,7 +47,8 @@ public class ProblemService
             Solution = solution,
             Version = 0,
             Status = ProblemStatus.Posted,
-            Class = offeringId
+            Class = offeringId,
+            Type = ProblemType.CLRS
         };
         await _problemCollection.InsertOneAsync(newProblem);
     }
@@ -72,7 +73,8 @@ public class ProblemService
             Version = problem.Version + 1,
             Title = problem.Title,
             Class = problem.Class,
-            Latest = true
+            Latest = true,
+            Type = problem.Type
         };
         await _problemCollection.InsertOneAsync(newProblem);
         
@@ -89,10 +91,13 @@ public class ProblemService
         await _problemCollection.FindOneAndUpdateAsync(filter, update);
     }
 
-    public async Task<List<Problem>> GetByClassAsync(string offeringId) =>
-        await _problemCollection.Find(x => x.Class == offeringId && x.Latest).ToListAsync();
+    public async Task<List<Problem>> GetByClassAsync(string offeringId, ProblemStatus? status) =>
+        await _problemCollection.Find(x => x.Class == offeringId && x.Latest && (!status.HasValue || (x.Status == status))).ToListAsync();
 
     public async Task<Problem?> GetAsync(string problemId) =>
         await _problemCollection.Find(x => (x.Id == problemId || x.Source == problemId) && x.Latest).FirstOrDefaultAsync();
+
+    public async Task<List<Problem>> GetBySourceAsync(string source) =>
+        await _problemCollection.Find(x => x.Source == source || x.Id == source).ToListAsync();
 
 }
