@@ -1,8 +1,9 @@
 import { Drawer, Stack } from '@mui/material'
 import Typography from '@mui/material/Typography'
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
+import useAuth from '@/context/context'
 import { RouteList } from '@/enum'
 import { useCurrentCourse } from '@/hooks'
 import { theme } from '@/themes/theme'
@@ -39,6 +40,17 @@ function Tab(props: { text: string; route: string }) {
 }
 
 export const Sidebar: React.FC = () => {
+  const courseId = useCurrentCourse()
+  const { user } = useAuth()
+  const [courseCode, setCourseCode] = React.useState('')
+
+  useEffect(() => {
+    const found = user?.courses.find((course) => course.oid === courseId)?.code
+    if (found) {
+      setCourseCode(found)
+    }
+  }, [courseId, user, setCourseCode])
+
   return (
     <Drawer
       sx={{
@@ -75,6 +87,9 @@ export const Sidebar: React.FC = () => {
             }}
           >
             CLRUS
+          </Typography>
+          <Typography variant="h6" sx={{ textAlign: 'center', color: 'black' }}>
+            {courseCode.toUpperCase()}
           </Typography>
         </Link>
 
