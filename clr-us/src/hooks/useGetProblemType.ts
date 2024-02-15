@@ -12,5 +12,5 @@ const toProblemType = new Map<string, ProblemType>([
 export const useGetProblemType = () => {
   const location = useLocation()
   const problemType = location.pathname.split('/')[3]
-  return toProblemType.get(problemType)
+  return toProblemType.get(problemType) || ProblemType.Tutorial
 }

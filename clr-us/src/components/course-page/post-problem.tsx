@@ -1,7 +1,7 @@
 import { Button, Grid, Tooltip, Typography } from '@mui/material'
 import { Field, Form, Formik, FieldProps, ErrorMessage } from 'formik'
 import { TextField } from 'formik-mui'
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import 'react-quill/dist/quill.snow.css'
 import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
@@ -23,12 +23,12 @@ export const PostProblem: React.FC = () => {
   const isCLRSProblem = useMemo(() => problemType === ProblemType.CLRS, [problemType])
   const navigate = useNavigate()
 
-  const initialValues: IPostProblem = {
+  const [initialValues, setInitialValues] = useState({
     author: user?.id || '',
     title: '',
     body: '',
     solution: '',
-  }
+  } as IPostProblem)
 
   const validationSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
@@ -36,13 +36,41 @@ export const PostProblem: React.FC = () => {
     solution: Yup.string().required('Solution attempt is required'),
   })
 
+  useEffect(() => {
+    if (isCLRSProblem) {
+      // TODO: Make this dynamic, problem to be selected in a dropdown
+      postService.getCLRSProblem(15, 1).then((res) => {
+        console.log('i happen')
+        setInitialValues({
+          ...initialValues,
+          ...res,
+        })
+      })
+    }
+  }, [isCLRSProblem])
+
   const handleSubmit = useCallback(
     async (values: IPostProblem) => {
-      await postService.postProblemScratch(values, course, problemType).then(() => {
-        navigate(`/${course}/${RouteList.Learn}/${problemType.toLowerCase()}`)
-      })
+      if (isCLRSProblem) {
+        await postService
+          .postCLRSProblem({
+            // TODO: Make this dynamic
+            chapter: 15,
+            problem: 1,
+            solution: values.solution,
+            userId: values.author,
+            offeringId: course,
+          })
+          .then(() => {
+            navigate(`/${course}/${RouteList.Learn}/${problemType.toLowerCase()}`)
+          })
+      } else {
+        await postService.postProblemScratch(values, course, problemType).then(() => {
+          navigate(`/${course}/${RouteList.Learn}/${problemType.toLowerCase()}`)
+        })
+      }
     },
-    [course, navigate, problemType]
+    [course, isCLRSProblem, navigate, problemType]
   )
 
   return (
@@ -57,6 +85,7 @@ export const PostProblem: React.FC = () => {
       <Sidebar />
       <Grid p={5} width={'70vw'}>
         <Formik
+          enableReinitialize
           initialValues={initialValues}
           onSubmit={handleSubmit}
           validationSchema={validationSchema}
@@ -78,11 +107,16 @@ export const PostProblem: React.FC = () => {
                   name={'title'}
                   label="Problem Title"
                   type="text"
+                  disabled={isCLRSProblem}
                   style={{ width: '30%' }}
                 />
                 <Field name="body">
                   {({ field }: FieldProps) => (
-                    <TextEditor value={field.value} onChange={field.onChange(field.name)} />
+                    <TextEditor
+                      value={field.value}
+                      onChange={field.onChange(field.name)}
+                      readOnly={isCLRSProblem}
+                    />
                   )}
                 </Field>
                 <ErrorMessage name="body">

@@ -15,3 +15,16 @@ export interface IPostProblemPayload extends IPostProblem {
   version: number
   latest: boolean
 }
+
+export interface IImportedCLRSProblem {
+  body: string
+  title: string
+}
+
+export interface IPostCLRSProblem {
+  chapter: number
+  problem: number
+  solution: string
+  userId: string
+  offeringId: string
+}

@@ -17,4 +17,7 @@ public class CLRS
     
     [BsonElement("body")]
     public string Body { get; set; }
+    
+    [BsonElement("title")]
+    public string Title { get; set; }
 }
