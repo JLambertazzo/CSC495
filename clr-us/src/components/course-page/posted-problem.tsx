@@ -2,7 +2,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import { Button, Card, CardActions, CardContent, Grid, Typography } from '@mui/material'
 import { Formik, Form, Field, FieldProps, ErrorMessage } from 'formik'
 import parse from 'html-react-parser'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import 'react-quill/dist/quill.snow.css'
 import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
@@ -10,17 +10,22 @@ import * as Yup from 'yup'
 import useAuth from '@/context/context'
 import { ProblemType } from '@/enum'
 import { useCourseCheck } from '@/hooks'
-import { IUser } from '@/types'
+import { IUser, PullRequest } from '@/types'
 import { Problem } from '@/types/problem'
 
 import { TextEditor } from '../text-editor/text-editor'
 
+import { PrModal } from './pr-modal'
 import { pullRequestService } from './pullrequest.service'
 import { IPREdit } from './type'
 
-const SolutionEditor = (props: { problem?: Problem; user: IUser | null }) => {
+const SolutionEditor = (props: {
+  problem?: Problem
+  user: IUser | null
+  closeEditor: VoidFunction
+}) => {
   const [initialValues] = useState<IPREdit>({
-    author: props.user?.id ?? '',
+    author: props.user?.username ?? '',
     solution: props.problem?.solution ?? '',
   })
   const validationSchema = Yup.object().shape({
@@ -56,8 +61,16 @@ const SolutionEditor = (props: { problem?: Problem; user: IUser | null }) => {
             {(msg) => <Typography sx={{ color: 'red', mt: 4 }}>{msg}</Typography>}
           </ErrorMessage>
           <Grid sx={{ width: 'fit-content', mt: 10 }}>
-            <Button type={'submit'} variant={'contained'} disabled={!values.solution}>
+            <Button
+              type={'submit'}
+              variant={'contained'}
+              disabled={!values.solution}
+              sx={{ mr: 1 }}
+            >
               Submit Edits
+            </Button>
+            <Button type={'button'} variant={'outlined'} onClick={() => props.closeEditor()}>
+              Cancel
             </Button>
           </Grid>
         </Form>
@@ -70,6 +83,13 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
   useCourseCheck()
   const { user } = useAuth()
   const [editing, setEditing] = useState(false)
+  const [prs, setPrs] = useState<PullRequest[] | null>(null)
+
+  useEffect(() => {
+    if (props.problem) {
+      pullRequestService.getPullRequests(props.problem.id, setPrs)
+    }
+  }, [props.problem])
 
   return (
     <Grid p={5} width={'70vw'}>
@@ -83,9 +103,14 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
       </Grid>
       <Grid container direction={'column'} gap={2} width={'100%'} mt={5}>
         <Typography variant={'h5'}>Solution</Typography>
+        {prs && <PrModal prs={prs} />}
         <Typography color={'#B0B0B0'}>The student submitted the following solution.</Typography>
         {editing ? (
-          <SolutionEditor problem={props.problem} user={user} />
+          <SolutionEditor
+            problem={props.problem}
+            user={user}
+            closeEditor={() => setEditing(false)}
+          />
         ) : (
           <Card sx={{ p: 2 }}>
             <CardContent>{parse(props.problem?.solution ?? '')}</CardContent>

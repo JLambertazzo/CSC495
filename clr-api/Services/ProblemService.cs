@@ -103,4 +103,11 @@ public class ProblemService
     public async Task RemoveAsync(string id) =>
         await _problemCollection.DeleteOneAsync(x => x.Id == id);
 
+    public async Task<Problem?> GetLatest(string id)
+    {
+        var current = await _problemCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
+        var match = current.Source ?? current.Id;
+        return await _problemCollection.Find(x => x.Source == match && x.Latest).FirstOrDefaultAsync();
+    }
+
 }
