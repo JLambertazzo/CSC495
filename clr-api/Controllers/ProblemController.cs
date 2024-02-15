@@ -110,4 +110,8 @@ public class ProblemController(ProblemService problemService, UsersService users
         await problemService.EditSolution(id, update.NewSolution, user.Username);
         return Ok();
     }
+
+    [HttpDelete("{id:length(24)}")]
+    public async Task Delete(string id) =>
+        await problemService.RemoveAsync(id);
 }

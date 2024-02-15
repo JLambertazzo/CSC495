@@ -3,7 +3,13 @@ import { CssBaseline, ThemeProvider } from '@mui/material'
 import React from 'react'
 import { Routes, Route, BrowserRouter as Router } from 'react-router-dom'
 
-import { LearnPage, PostProblem, ProblemPage, QuizPage } from '@/components/course-page'
+import {
+  LearnPage,
+  PostProblem,
+  ProblemPage,
+  QuizPage,
+  ViewProblem,
+} from '@/components/course-page'
 import { ProblemRoutes, RouteList } from '@/enum'
 
 import { Home } from './components/home/home'
@@ -33,6 +39,11 @@ function App() {
                   key={value}
                   path={`/:id/${RouteList.Learn}/${value}/${RouteList.Post}`}
                   element={<PostProblem />}
+                />
+                <Route
+                  key={value}
+                  path={`/:id/${RouteList.Learn}/${value}/:problemId`}
+                  element={<ViewProblem />}
                 />
               </>
             ))}

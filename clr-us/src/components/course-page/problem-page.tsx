@@ -16,7 +16,8 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Sidebar } from '@/components/navbar'
-import { RouteList } from '@/enum'
+import useAuth from '@/context/context'
+import { ProblemType, RouteList } from '@/enum'
 import { useCourseCheck } from '@/hooks'
 import { useGetClassId } from '@/hooks/useGetClassId'
 import { useGetProblemType } from '@/hooks/useGetProblemType'
@@ -43,16 +44,37 @@ export const ProblemPage: React.FC = () => {
   useCourseCheck()
   const problemType = useGetProblemType()
   const classId = useGetClassId()
+  const { user } = useAuth()
   const [postedProblems, setPostedProblems] = useState<Problem[] | undefined>(undefined)
   const [endorsedProblems, setEndorsedProblems] = useState<Problem[] | undefined>(undefined)
-  const [tab, setTab] = useState(0)
+  const [reviewProblems, setReviewProblems] = useState<Problem[] | undefined>(undefined)
+  const [tab, setTab] = useState(1)
+  const [isInstructor, setIsInstructor] = useState(false)
+
+  useEffect(
+    () =>
+      setIsInstructor(
+        !!user?.courses.some((course) => course.oid === classId && course.role === 'Instructor')
+      ),
+    [user, classId, setIsInstructor]
+  )
 
   useEffect(() => {
     if (problemType) {
       problemService.getProblems(classId, ProblemStatus.Posted, problemType, setPostedProblems)
       problemService.getProblems(classId, ProblemStatus.Endorsed, problemType, setEndorsedProblems)
+      if (isInstructor) {
+        problemService.getProblems(classId, ProblemStatus.Review, problemType, setReviewProblems)
+      }
     }
-  }, [problemType, classId, setPostedProblems, setEndorsedProblems])
+  }, [
+    problemType,
+    classId,
+    setPostedProblems,
+    setEndorsedProblems,
+    setReviewProblems,
+    isInstructor,
+  ])
 
   return (
     <Grid
@@ -83,17 +105,31 @@ export const ProblemPage: React.FC = () => {
             onChange={(_, newValue) => setTab(newValue)}
             aria-label="problem type tabs"
           >
-            <Tab label="In Progress" id="tab-in-progress" aria-controls="simple-tabpanel-0" />
-            <Tab label="Endorsed" id="tab-endorsed" aria-controls="simple-tabpanel-1" />
+            {isInstructor && problemType?.toLowerCase() !== ProblemType.CLRS.toLowerCase() && (
+              <Tab label="Review" id="tab-review" aria-controls="simple-tabpanel-0" />
+            )}
+            <Tab label="In Progress" id="tab-in-progress" aria-controls="simple-tabpanel-1" />
+            <Tab label="Endorsed" id="tab-endorsed" aria-controls="simple-tabpanel-2" />
           </Tabs>
         </Box>
         <Divider />
-        <CustomTabPanel value={tab} index={0}>
+        {isInstructor && problemType?.toLowerCase() !== ProblemType.CLRS.toLowerCase() && (
+          <CustomTabPanel value={tab} index={0}>
+            <Box>
+              {reviewProblems ? (
+                <List>{reviewProblems.map(getListItem)}</List>
+              ) : (
+                <CircularProgress />
+              )}
+            </Box>
+          </CustomTabPanel>
+        )}
+        <CustomTabPanel value={tab} index={1}>
           <Box>
             {postedProblems ? <List>{postedProblems.map(getListItem)}</List> : <CircularProgress />}
           </Box>
         </CustomTabPanel>
-        <CustomTabPanel value={tab} index={1}>
+        <CustomTabPanel value={tab} index={2}>
           <Box>
             {endorsedProblems ? (
               <List>{endorsedProblems.map(getListItem)}</List>

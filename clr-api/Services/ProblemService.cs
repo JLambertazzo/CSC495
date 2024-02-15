@@ -100,4 +100,7 @@ public class ProblemService
     public async Task<List<Problem>> GetBySourceAsync(string source) =>
         await _problemCollection.Find(x => x.Source == source || x.Id == source).ToListAsync();
 
+    public async Task RemoveAsync(string id) =>
+        await _problemCollection.DeleteOneAsync(x => x.Id == id);
+
 }
