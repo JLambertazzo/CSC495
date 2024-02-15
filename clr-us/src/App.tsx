@@ -3,7 +3,7 @@ import { CssBaseline, ThemeProvider } from '@mui/material'
 import React from 'react'
 import { Routes, Route, BrowserRouter as Router } from 'react-router-dom'
 
-import { LearnPage, ProblemPage, QuizPage } from '@/components/course-page'
+import { LearnPage, PostProblem, ProblemPage, QuizPage } from '@/components/course-page'
 import { ProblemRoutes, RouteList } from '@/enum'
 
 import { Home } from './components/home/home'
@@ -23,11 +23,18 @@ function App() {
             <Route path="/:id" element={<LearnPage />} />
             <Route path={`/:id/${RouteList.Learn}`} element={<LearnPage />} />
             {(Object.values(ProblemRoutes) as Array<ProblemRoutes>).map((value) => (
-              <Route
-                key={value}
-                path={`/:id/${RouteList.Learn}/${value}`}
-                element={<ProblemPage />}
-              />
+              <>
+                <Route
+                  key={value}
+                  path={`/:id/${RouteList.Learn}/${value}`}
+                  element={<ProblemPage />}
+                />
+                <Route
+                  key={value}
+                  path={`/:id/${RouteList.Learn}/${value}/${RouteList.Post}`}
+                  element={<PostProblem />}
+                />
+              </>
             ))}
             <Route path={`/:id/${RouteList.Quizzes}`} element={<QuizPage />} />
             <Route path="/login" element={<Login />} />

@@ -77,6 +77,7 @@ export const ProblemPage: React.FC = () => {
   return (
     <Grid
       container
+      direction={'row'}
       sx={{
         background: 'rgba(243, 246, 249, 0.6)',
         height: '100vh',
