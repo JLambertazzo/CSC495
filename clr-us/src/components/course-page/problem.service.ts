@@ -32,6 +32,12 @@ class ProblemService {
       .then((res) => setProblem(res.data))
       .catch((err) => err)
 
+  getLatest = (id: string, setLatest: (problem: Problem) => void) =>
+    axios
+      .get(`/Problem/latest/${id}`)
+      .then((res) => setLatest(res.data))
+      .catch((err) => err)
+
   approveProblem = (navigate: NavigateFunction, id: string) => () =>
     axios
       .patch(`/Problem/status/${id}/${ProblemStatus.Posted}`)

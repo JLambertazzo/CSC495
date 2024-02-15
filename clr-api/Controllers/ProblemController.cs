@@ -61,6 +61,10 @@ public class ProblemController(ProblemService problemService, UsersService users
     public async Task<ActionResult<List<Problem>>> GetByClass(string id, ProblemStatus? status) => 
         await problemService.GetByClassAsync(id, status);
 
+    [HttpGet("latest/{id:length(24)}")]
+    public async Task<ActionResult<Problem?>> GetLatest(string id) =>
+        await problemService.GetLatest(id);
+
     [HttpPost]
     public async Task<ActionResult<Problem>> Post([FromBody] ProblemFromScratch problemFromScratch)
     {
