@@ -1,6 +1,7 @@
 import EditIcon from '@mui/icons-material/Edit'
 import { Button, Card, CardActions, CardContent, Grid, Typography } from '@mui/material'
 import { Formik, Form, Field, FieldProps, ErrorMessage } from 'formik'
+import parse from 'html-react-parser'
 import { useCallback, useState } from 'react'
 import 'react-quill/dist/quill.snow.css'
 import { useNavigate } from 'react-router-dom'
@@ -78,7 +79,7 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
       <Grid container py={3} direction={'column'} gap={2} width={'100%'}>
         <Typography variant={'h5'}>Problem</Typography>
         <Typography variant="h6">{props.problem?.title}</Typography>
-        <Card sx={{ p: 2 }}>{props.problem?.body}</Card>
+        <Card sx={{ p: 2 }}>{parse(props.problem?.body ?? '')}</Card>
       </Grid>
       <Grid container direction={'column'} gap={2} width={'100%'} mt={5}>
         <Typography variant={'h5'}>Solution</Typography>
@@ -87,7 +88,7 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
           <SolutionEditor problem={props.problem} user={user} />
         ) : (
           <Card sx={{ p: 2 }}>
-            <CardContent>{props.problem?.solution}</CardContent>
+            <CardContent>{parse(props.problem?.solution ?? '')}</CardContent>
             <CardActions>
               <Button
                 endIcon={<EditIcon />}

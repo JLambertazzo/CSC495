@@ -12,6 +12,7 @@ import {
   Divider,
   Button,
 } from '@mui/material'
+import parse from 'html-react-parser'
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -29,13 +30,13 @@ import { problemService } from './problem.service'
 
 const getListItem = (problem: Problem) => (
   <ListItem>
-    <Card sx={{ p: 3 }}>
+    <Card sx={{ p: 3, width: '100%' }}>
       <Link to={problem.id} style={{ textDecoration: 'none' }}>
         <Typography variant="h6">{problem.title}</Typography>
       </Link>
       <Typography variant="caption">Last Edit by {problem.author}</Typography>
       <br />
-      <Typography variant="body1">{problem.body}</Typography>
+      <Typography variant="body1">{parse(problem.body)}</Typography>
     </Card>
   </ListItem>
 )
@@ -82,7 +83,7 @@ export const ProblemPage: React.FC = () => {
       direction={'row'}
       sx={{
         background: 'rgba(243, 246, 249, 0.6)',
-        height: '100vh',
+        minHeight: '100vh',
         width: '100%',
         justifyContent: 'flex-start',
       }}

@@ -33,7 +33,7 @@ export const ViewProblem: React.FC = () => {
       container
       sx={{
         background: 'rgba(243, 246, 249, 0.6)',
-        height: '100vh',
+        minHeight: '100vh',
         width: '100%',
       }}
     >
