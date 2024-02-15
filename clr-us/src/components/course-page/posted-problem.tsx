@@ -18,7 +18,11 @@ import { PrModal } from './pr-modal'
 import { pullRequestService } from './pullrequest.service'
 import { IPREdit } from './type'
 
-const SolutionEditor = (props: { problem?: Problem; user: IUser | null }) => {
+const SolutionEditor = (props: {
+  problem?: Problem
+  user: IUser | null
+  closeEditor: VoidFunction
+}) => {
   const [initialValues] = useState<IPREdit>({
     author: props.user?.username ?? '',
     solution: props.problem?.solution ?? '',
@@ -56,8 +60,16 @@ const SolutionEditor = (props: { problem?: Problem; user: IUser | null }) => {
             {(msg) => <Typography sx={{ color: 'red', mt: 4 }}>{msg}</Typography>}
           </ErrorMessage>
           <Grid sx={{ width: 'fit-content', mt: 10 }}>
-            <Button type={'submit'} variant={'contained'} disabled={!values.solution}>
+            <Button
+              type={'submit'}
+              variant={'contained'}
+              disabled={!values.solution}
+              sx={{ mr: 1 }}
+            >
               Submit Edits
+            </Button>
+            <Button type={'button'} variant={'outlined'} onClick={() => props.closeEditor()}>
+              Cancel
             </Button>
           </Grid>
         </Form>
@@ -93,7 +105,11 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
         {prs && <PrModal prs={prs} />}
         <Typography color={'#B0B0B0'}>The student submitted the following solution.</Typography>
         {editing ? (
-          <SolutionEditor problem={props.problem} user={user} />
+          <SolutionEditor
+            problem={props.problem}
+            user={user}
+            closeEditor={() => setEditing(false)}
+          />
         ) : (
           <Card sx={{ p: 2 }}>
             <CardContent>{props.problem?.solution}</CardContent>
