@@ -38,9 +38,11 @@ export const PostProblem: React.FC = () => {
 
   const handleSubmit = useCallback(
     async (values: IPostProblem) => {
-      await postService.postProblemScratch(values, course, problemType).then(() => {
-        navigate(`/${course}/${RouteList.Learn}/${problemType.toLowerCase()}`)
-      })
+      await postService
+        .postProblemScratch(values, course, problemType ?? ProblemType.Tutorial)
+        .then(() => {
+          navigate(`/${course}/${RouteList.Learn}/${problemType?.toLowerCase()}`)
+        })
     },
     [course, navigate, problemType]
   )

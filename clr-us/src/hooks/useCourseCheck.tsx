@@ -28,4 +28,27 @@ const useCourseCheck = () => {
   }, [courseID, navigate, user])
 }
 
-export { useCurrentCourse, useCourseCheck }
+// Requires user to be an instructor for the course
+const useInstructorCheck = () => {
+  const { user } = useAuth()
+  const navigate = useNavigate()
+  const courseID = useCurrentCourse()
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login')
+    } else {
+      if (courseID) {
+        // Check if the user is instructor in this course
+        const isInstructor = user.courses.some(
+          (course) => course.oid === courseID && course.role === 'Instructor'
+        )
+        if (!isInstructor) navigate('/')
+      } else {
+        navigate('/')
+      }
+    }
+  }, [courseID, navigate, user])
+}
+
+export { useCurrentCourse, useCourseCheck, useInstructorCheck }

@@ -1,3 +1,5 @@
+import { NavigateFunction } from 'react-router-dom'
+
 import { ProblemType } from '@/enum'
 import { Problem, ProblemStatus, isProblem } from '@/types/problem'
 
@@ -23,5 +25,23 @@ class ProblemService {
       })
       .catch((err) => err)
   }
+
+  getProblem = (id: string, setProblem: (problem: Problem) => void) =>
+    axios
+      .get(`/Problem/${id}`)
+      .then((res) => setProblem(res.data))
+      .catch((err) => err)
+
+  approveProblem = (navigate: NavigateFunction, id: string) => () =>
+    axios
+      .patch(`/Problem/status/${id}/${ProblemStatus.Posted}`)
+      .then(() => navigate('..'))
+      .catch((err) => err)
+
+  deleteProblem = (navigate: NavigateFunction, id: string) => () =>
+    axios
+      .delete(`/Problem/${id}`)
+      .then(() => navigate('..'))
+      .catch((err) => err)
 }
 export const problemService = new ProblemService()
