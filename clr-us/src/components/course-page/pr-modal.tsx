@@ -10,6 +10,7 @@ import {
   Modal,
   Typography,
 } from '@mui/material'
+import parse from 'html-react-parser'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -41,7 +42,7 @@ const PrCard = (props: { pr: PullRequest; byUser?: boolean; close: VoidFunction 
       <CardHeader title={'Suggested By ' + props.pr.author} />
       <CardContent>
         <Typography variant="h6">Suggested Solution:</Typography>
-        <Typography variant="body1">{props.pr.body}</Typography>
+        <Typography variant="body1">{parse(props.pr.body)}</Typography>
       </CardContent>
       <CardActions>
         {props.byUser ? (
@@ -81,11 +82,13 @@ export const PrModal = (props: { prs: PullRequest[] }) => {
 
   return (
     <>
-      <Button type="button" sx={{ width: 'max-content' }} onClick={() => setOpen(true)}>
-        <Typography variant={'caption'} sx={{ textDecoration: 'underline' }}>
-          {props.prs.length} Suggested Edit{props.prs.length > 1 && 's'}
-        </Typography>
-      </Button>
+      {props.prs.length > 0 && (
+        <Button type="button" sx={{ width: 'max-content' }} onClick={() => setOpen(true)}>
+          <Typography variant={'caption'} sx={{ textDecoration: 'underline' }}>
+            {props.prs.length} Suggested Edits
+          </Typography>
+        </Button>
+      )}
       <Modal
         open={open}
         onClose={() => setOpen(false)}

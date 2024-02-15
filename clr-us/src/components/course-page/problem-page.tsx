@@ -49,7 +49,7 @@ export const ProblemPage: React.FC = () => {
   const [postedProblems, setPostedProblems] = useState<Problem[] | undefined>(undefined)
   const [endorsedProblems, setEndorsedProblems] = useState<Problem[] | undefined>(undefined)
   const [reviewProblems, setReviewProblems] = useState<Problem[] | undefined>(undefined)
-  const [tab, setTab] = useState(1)
+  const [tab, setTab] = useState(0)
   const [isInstructor, setIsInstructor] = useState(false)
 
   useEffect(
@@ -125,12 +125,12 @@ export const ProblemPage: React.FC = () => {
             </Box>
           </CustomTabPanel>
         )}
-        <CustomTabPanel value={tab} index={1}>
+        <CustomTabPanel value={tab} index={0}>
           <Box>
             {postedProblems ? <List>{postedProblems.map(getListItem)}</List> : <CircularProgress />}
           </Box>
         </CustomTabPanel>
-        <CustomTabPanel value={tab} index={2}>
+        <CustomTabPanel value={tab} index={1}>
           <Box>
             {endorsedProblems ? (
               <List>{endorsedProblems.map(getListItem)}</List>
