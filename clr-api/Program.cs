@@ -22,6 +22,7 @@ builder.Services.AddSingleton<ClassService>();
 builder.Services.AddSingleton<CLRSService>();
 builder.Services.AddSingleton<ProblemService>();
 builder.Services.AddSingleton<PullRequestService>();
+builder.Services.AddSingleton<CommentService>();
 builder.Services.AddControllers();
 
 // Add services to the container.
