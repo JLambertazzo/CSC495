@@ -1,12 +1,14 @@
 import {
+  Tab,
   Box,
   Card,
   CircularProgress,
-  Divider,
   Grid,
   List,
   ListItem,
+  Tabs,
   Typography,
+  Divider,
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -17,15 +19,15 @@ import { useGetClassId } from '@/hooks/useGetClassId'
 import { useGetProblemType } from '@/hooks/useGetProblemType'
 import { Problem, ProblemStatus } from '@/types/problem'
 
+import { CustomTabPanel } from '../tab-panel'
+
 import { problemService } from './problem.service'
 
 const getListItem = (problem: Problem) => (
   <ListItem>
     <Card sx={{ p: 3 }}>
       <Link to={problem.id} style={{ textDecoration: 'none' }}>
-        <Typography variant="h6" sx={{ mb: 0, pb: 0 }}>
-          {problem.title}
-        </Typography>
+        <Typography variant="h6">{problem.title}</Typography>
       </Link>
       <Typography variant="caption">Last Edit by {problem.author}</Typography>
       <br />
@@ -38,13 +40,16 @@ export const ProblemPage: React.FC = () => {
   useCourseCheck()
   const problemType = useGetProblemType()
   const classId = useGetClassId()
-  const [problems, setProblems] = useState<Problem[] | undefined>(undefined)
+  const [postedProblems, setPostedProblems] = useState<Problem[] | undefined>(undefined)
+  const [endorsedProblems, setEndorsedProblems] = useState<Problem[] | undefined>(undefined)
+  const [tab, setTab] = useState(0)
 
   useEffect(() => {
     if (problemType) {
-      problemService.getProblems(classId, ProblemStatus.Posted, problemType, setProblems)
+      problemService.getProblems(classId, ProblemStatus.Posted, problemType, setPostedProblems)
+      problemService.getProblems(classId, ProblemStatus.Endorsed, problemType, setEndorsedProblems)
     }
-  }, [problemType, classId, setProblems])
+  }, [problemType, classId, setPostedProblems, setEndorsedProblems])
 
   return (
     <Grid
@@ -61,8 +66,31 @@ export const ProblemPage: React.FC = () => {
         <Typography variant="h5" sx={{ my: 4 }}>
           {problemType} Problems
         </Typography>
+        <Box>
+          <Tabs
+            value={tab}
+            onChange={(_, newValue) => setTab(newValue)}
+            aria-label="problem type tabs"
+          >
+            <Tab label="In Progress" id="tab-in-progress" aria-controls="simple-tabpanel-0" />
+            <Tab label="Endorsed" id="tab-endorsed" aria-controls="simple-tabpanel-1" />
+          </Tabs>
+        </Box>
         <Divider />
-        <Box>{problems ? <List>{problems.map(getListItem)}</List> : <CircularProgress />}</Box>
+        <CustomTabPanel value={tab} index={0}>
+          <Box>
+            {postedProblems ? <List>{postedProblems.map(getListItem)}</List> : <CircularProgress />}
+          </Box>
+        </CustomTabPanel>
+        <CustomTabPanel value={tab} index={1}>
+          <Box>
+            {endorsedProblems ? (
+              <List>{endorsedProblems.map(getListItem)}</List>
+            ) : (
+              <CircularProgress />
+            )}
+          </Box>
+        </CustomTabPanel>
       </Grid>
     </Grid>
   )
