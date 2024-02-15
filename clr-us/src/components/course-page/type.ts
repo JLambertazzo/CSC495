@@ -7,6 +7,11 @@ export interface IPostProblem {
   solution: string
 }
 
+export interface IPREdit {
+  author: string
+  solution: string
+}
+
 export interface IPostProblemPayload extends IPostProblem {
   source: string | null
   status: ProblemStatus
