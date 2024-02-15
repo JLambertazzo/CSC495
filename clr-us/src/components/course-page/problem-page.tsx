@@ -1,3 +1,4 @@
+import AddIcon from '@mui/icons-material/Add'
 import {
   Tab,
   Box,
@@ -9,13 +10,14 @@ import {
   Tabs,
   Typography,
   Divider,
+  Button,
 } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Sidebar } from '@/components/navbar'
 import useAuth from '@/context/context'
-import { ProblemType } from '@/enum'
+import { ProblemType, RouteList } from '@/enum'
 import { useCourseCheck } from '@/hooks'
 import { useGetClassId } from '@/hooks/useGetClassId'
 import { useGetProblemType } from '@/hooks/useGetProblemType'
@@ -86,10 +88,17 @@ export const ProblemPage: React.FC = () => {
       }}
     >
       <Sidebar />
-      <Grid direction="column" sx={{ mx: 2, maxWidth: '70%' }}>
-        <Typography variant="h5" sx={{ my: 4 }}>
-          {problemType} Problems
-        </Typography>
+      <Grid direction="column" sx={{ mx: 2, width: '70%' }}>
+        <Grid container alignItems={'center'} justifyContent={'space-between'}>
+          <Typography variant="h5" sx={{ my: 4 }}>
+            {problemType} Problems
+          </Typography>
+          <Link to={`${RouteList.Post}`}>
+            <Button variant={'contained'} endIcon={<AddIcon />}>
+              Post
+            </Button>
+          </Link>
+        </Grid>
         <Box>
           <Tabs
             value={tab}
