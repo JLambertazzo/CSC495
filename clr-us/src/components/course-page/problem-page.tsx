@@ -41,8 +41,10 @@ export const ProblemPage: React.FC = () => {
   const [problems, setProblems] = useState<Problem[] | undefined>(undefined)
 
   useEffect(() => {
-    problemService.getProblems(classId, ProblemStatus.Posted, setProblems)
-  }, [classId, setProblems])
+    if (problemType) {
+      problemService.getProblems(classId, ProblemStatus.Posted, problemType, setProblems)
+    }
+  }, [problemType, classId, setProblems])
 
   return (
     <Grid
