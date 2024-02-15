@@ -1,6 +1,7 @@
 export enum RouteList {
   Learn = 'learn',
   Quizzes = 'quizzes',
+  Post = 'post',
 }
 
 export enum ProblemRoutes {
@@ -15,4 +16,10 @@ export enum ProblemType {
   Tutorial = 'Tutorial',
   Lecture = 'Lecture',
   Other = 'Other',
+}
+
+export enum ProblemStatus {
+  Review = 'Review',
+  Posted = 'Posted',
+  Endorsed = 'Endorsed',
 }

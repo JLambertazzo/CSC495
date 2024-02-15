@@ -1,4 +1,5 @@
-import { IUser } from '../../types'
+import { IUser } from '@/types'
+
 import { axios } from '../services/axios'
 
 class LoginService {
