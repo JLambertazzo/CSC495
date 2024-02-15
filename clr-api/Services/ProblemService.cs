@@ -24,15 +24,15 @@ public class ProblemService
         _clrsService = clrsService;
     }
 
-    public async Task CreateAsync(Problem newProblem, string userId, string offeringId)
+    public async Task CreateAsync(Problem newProblem, string username, string offeringId)
     {
-        newProblem.Author = userId;
+        newProblem.Author = username;
         newProblem.Version = 0;
         newProblem.Class = offeringId;
         await _problemCollection.InsertOneAsync(newProblem);
     }
 
-    public async Task CreateFromClrsAsync(int chapter, int problem, string solution, string userId, string offeringId)
+    public async Task CreateFromClrsAsync(int chapter, int problem, string solution, string username, string offeringId)
     {
         var clrs = await _clrsService.GetAsync(chapter, problem);
         if (clrs is null)
@@ -43,17 +43,17 @@ public class ProblemService
         {
             Title = $"CLRS Chapter {chapter} Problem {problem}.",
             Body = clrs.Body,
-            Author = userId,
+            Author = username,
             Solution = solution,
             Version = 0,
             Status = ProblemStatus.Posted,
             Class = offeringId,
-            Type = ProblemType.CLRS
+            Type = ProblemType.Clrs
         };
         await _problemCollection.InsertOneAsync(newProblem);
     }
 
-    public async Task EditSolution(string problemId, string newSolution, string userId)
+    public async Task EditSolution(string problemId, string newSolution, string username)
     {
         var problem = await _problemCollection.Find(x => (x.Id == problemId || x.Source == problemId) && x.Latest).FirstOrDefaultAsync();
         if (problem is null || problem.Status == ProblemStatus.Endorsed)
@@ -66,7 +66,7 @@ public class ProblemService
         var newProblem = new Problem
         {
             Source = source,
-            Author = userId,
+            Author = username,
             Solution = newSolution,
             Body = problem.Body,
             Status = problem.Status,

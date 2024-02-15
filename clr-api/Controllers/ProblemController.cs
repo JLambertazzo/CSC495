@@ -71,7 +71,7 @@ public class ProblemController(ProblemService problemService, UsersService users
             return NotFound();
         }
 
-        await problemService.CreateAsync(problemFromScratch.Problem, problemFromScratch.UserId,
+        await problemService.CreateAsync(problemFromScratch.Problem, user.Username,
             problemFromScratch.OfferingId);
         return CreatedAtAction(nameof(Get), new { id = problemFromScratch.Problem.Id }, problemFromScratch.Problem);
     }
@@ -87,7 +87,7 @@ public class ProblemController(ProblemService problemService, UsersService users
         }
 
         await problemService.CreateFromClrsAsync(problemFromClrs.Chapter, problemFromClrs.Problem,
-            problemFromClrs.Solution, problemFromClrs.UserId, problemFromClrs.OfferingId);
+            problemFromClrs.Solution, user.Username, problemFromClrs.OfferingId);
         return Ok();
     }
 
@@ -107,7 +107,7 @@ public class ProblemController(ProblemService problemService, UsersService users
             return NotFound();
         }
 
-        await problemService.EditSolution(id, update.NewSolution, update.UserId);
+        await problemService.EditSolution(id, update.NewSolution, user.Username);
         return Ok();
     }
 }
