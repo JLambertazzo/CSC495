@@ -20,7 +20,7 @@ public enum ProblemStatus
 public enum ProblemType
 {
     [EnumMember(Value="CLRS")]
-    CLRS,
+    Clrs,
     [EnumMember(Value="Tutorial")]
     Tutorial,
     [EnumMember(Value="Lecture")]
@@ -51,7 +51,6 @@ public class Problem
     [BsonElement("solution")]
     public string Solution { get; set; } = null!;
 
-    [BsonRepresentation(BsonType.ObjectId)]
     [BsonElement("author")]
     public string Author { get; set; } = null!;
 
