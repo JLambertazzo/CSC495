@@ -7,7 +7,7 @@ namespace clr_api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProblemController(ProblemService problemService, UsersService usersService, ClassService classService)
+public class ProblemController(ProblemService problemService, UsersService usersService, ClassService classService, AiService aiService)
     : ControllerBase
 {
 
@@ -75,7 +75,10 @@ public class ProblemController(ProblemService problemService, UsersService users
             return NotFound();
         }
 
-        await problemService.CreateAsync(problemFromScratch.Problem, user.Username,
+        var aiReview = await aiService.GetAiReview(problemFromScratch.Problem.Solution);
+        problemFromScratch.Problem.AiReview = aiReview;
+        await problemService.CreateAsync(problemFromScratch.Problem,
+            user.Username,
             problemFromScratch.OfferingId);
         return CreatedAtAction(nameof(Get), new { id = problemFromScratch.Problem.Id }, problemFromScratch.Problem);
     }

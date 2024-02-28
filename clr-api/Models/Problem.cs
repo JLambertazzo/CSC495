@@ -65,4 +65,7 @@ public class Problem
 
     [BsonElement("latest")]
     public bool Latest { get; set; } = true;
+
+    [BsonElement("AiReview")] public Ai? AiReview { get; set; }
+
 }

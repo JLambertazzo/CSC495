@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<ClrApiDatabaseSettings>(
     builder.Configuration.GetSection("ClrApiDatabase"));
 
+builder.Services.Configure<ApiKeys>(builder.Configuration.GetSection("ApiKeys"));
 
 builder.Services.AddCors(options =>
 {
@@ -23,6 +24,7 @@ builder.Services.AddSingleton<CLRSService>();
 builder.Services.AddSingleton<ProblemService>();
 builder.Services.AddSingleton<PullRequestService>();
 builder.Services.AddSingleton<CommentService>();
+builder.Services.AddSingleton<AiService>();
 builder.Services.AddControllers();
 
 // Add services to the container.
