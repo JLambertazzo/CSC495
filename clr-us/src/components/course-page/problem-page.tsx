@@ -13,7 +13,7 @@ import {
   Button,
 } from '@mui/material'
 import parse from 'html-react-parser'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Sidebar } from '@/components/navbar'
@@ -77,6 +77,14 @@ export const ProblemPage: React.FC = () => {
     isInstructor,
   ])
 
+  const showReview = useCallback(
+    () => isInstructor && problemType?.toLowerCase() !== ProblemType.CLRS.toLowerCase(),
+    [isInstructor, problemType]
+  )
+
+  const getInProgressTabId = () => (showReview() ? 1 : 0)
+  const getEndorsedTabId = () => getInProgressTabId() + 1
+
   return (
     <Grid
       container
@@ -106,15 +114,23 @@ export const ProblemPage: React.FC = () => {
             onChange={(_, newValue) => setTab(newValue)}
             aria-label="problem type tabs"
           >
-            {isInstructor && problemType?.toLowerCase() !== ProblemType.CLRS.toLowerCase() && (
+            {showReview() && (
               <Tab label="Review" id="tab-review" aria-controls="simple-tabpanel-0" />
             )}
-            <Tab label="In Progress" id="tab-in-progress" aria-controls="simple-tabpanel-1" />
-            <Tab label="Endorsed" id="tab-endorsed" aria-controls="simple-tabpanel-2" />
+            <Tab
+              label="In Progress"
+              id="tab-in-progress"
+              aria-controls={`simple-tabpanel-${getInProgressTabId()}`}
+            />
+            <Tab
+              label="Endorsed"
+              id="tab-endorsed"
+              aria-controls={`simple-tabpanel-${getEndorsedTabId()}`}
+            />
           </Tabs>
         </Box>
         <Divider />
-        {isInstructor && problemType?.toLowerCase() !== ProblemType.CLRS.toLowerCase() && (
+        {showReview() && (
           <CustomTabPanel value={tab} index={0}>
             <Box>
               {reviewProblems ? (
@@ -125,12 +141,12 @@ export const ProblemPage: React.FC = () => {
             </Box>
           </CustomTabPanel>
         )}
-        <CustomTabPanel value={tab} index={0}>
+        <CustomTabPanel value={tab} index={getInProgressTabId()}>
           <Box>
             {postedProblems ? <List>{postedProblems.map(getListItem)}</List> : <CircularProgress />}
           </Box>
         </CustomTabPanel>
-        <CustomTabPanel value={tab} index={1}>
+        <CustomTabPanel value={tab} index={getEndorsedTabId()}>
           <Box>
             {endorsedProblems ? (
               <List>{endorsedProblems.map(getListItem)}</List>
