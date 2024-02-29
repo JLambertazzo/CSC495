@@ -33,7 +33,7 @@ public class AiService
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _hfToken);
 
-        var requestData = new { inputs = body };
+        var requestData = new { inputs = body, options = new { max_length = 100 },  };
         var jsonBody = JsonSerializer.Serialize(requestData);
 
         var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");

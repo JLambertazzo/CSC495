@@ -1,4 +1,14 @@
-import { Alert, AlertTitle, Button, Grid, Typography } from '@mui/material'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Alert,
+  AlertTitle,
+  Button,
+  Grid,
+  Typography,
+} from '@mui/material'
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -44,6 +54,27 @@ export const ReviewProblem = (props: { problemType: ProblemType; problem?: Probl
             <AlertTitle>AI Review: {aiText}</AlertTitle>
             Our AI model has reviewed the student&apos;s solution attempt and has given it a score
             of <strong>{props.problem?.aiReview?.aiScore}</strong> out of <strong>10</strong>.
+            <Accordion
+              elevation={0}
+              sx={{
+                width: 'fit-content',
+                background: 'none',
+                border: 'none',
+                '&::before': {
+                  display: 'none',
+                },
+              }}
+            >
+              <AccordionSummary
+                sx={{ width: 'fit-content', columnGap: 3 }}
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1-content"
+                id="panel1-header"
+              >
+                Details
+              </AccordionSummary>
+              <AccordionDetails>{props.problem?.aiReview?.aiReason}</AccordionDetails>
+            </Accordion>
           </Alert>
         )}
         <Grid>
