@@ -19,7 +19,7 @@ import { Link } from 'react-router-dom'
 import { Sidebar } from '@/components/navbar'
 import useAuth from '@/context/context'
 import { ProblemType, RouteList } from '@/enum'
-import { useCourseCheck } from '@/hooks'
+import { useCourseCheck, useIsLarge } from '@/hooks'
 import { useGetClassId } from '@/hooks/useGetClassId'
 import { useGetProblemType } from '@/hooks/useGetProblemType'
 import { Problem, ProblemStatus } from '@/types/problem'
@@ -85,10 +85,10 @@ export const ProblemPage: React.FC = () => {
   const getInProgressTabId = () => (showReview() ? 1 : 0)
   const getEndorsedTabId = () => getInProgressTabId() + 1
 
+  const largeScreen = useIsLarge()
+
   return (
     <Grid
-      container
-      direction={'row'}
       sx={{
         background: 'rgba(243, 246, 249, 0.6)',
         minHeight: '100vh',
@@ -97,7 +97,10 @@ export const ProblemPage: React.FC = () => {
       }}
     >
       <Sidebar />
-      <Grid direction="column" sx={{ mx: 2, width: '70%' }}>
+      <Grid
+        direction="column"
+        sx={{ my: largeScreen ? 0 : 2, mr: 2, ml: largeScreen ? '316px' : '16px' }}
+      >
         <Grid container alignItems={'center'} justifyContent={'space-between'}>
           <Typography variant="h5" sx={{ my: 4 }}>
             {problemType} Problems
