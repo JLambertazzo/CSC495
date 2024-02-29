@@ -20,9 +20,9 @@ class PullRequestService {
       .then((res) => setPrs(res.data.filter(isPullRequest)))
       .catch((err) => err)
 
-  upvote = (problemId: string) =>
+  upvote = (problemId: string, username: string) =>
     axios
-      .post(`/PullRequest/upvote?id=${problemId}`)
+      .post(`/PullRequest/upvote?id=${problemId}&username=${username}`)
       .then()
       .catch((err) => err)
 

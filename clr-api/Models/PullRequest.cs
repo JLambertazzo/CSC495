@@ -13,7 +13,8 @@ public class PullRequest
     [BsonElement("problemId")]
     public string? ProblemId { get; set; }
 
-    [BsonElement("upvotes")] public int Upvotes { get; set; } = 0;
+    [BsonElement("upvoters")]
+    public List<string> Upvoters { get; set; } = new();
     
     [BsonElement("body")]
     public string Body { get; set; }

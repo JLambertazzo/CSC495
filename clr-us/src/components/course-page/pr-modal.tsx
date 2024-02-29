@@ -23,8 +23,13 @@ import { pullRequestService } from './pullrequest.service'
 
 const PrCard = (props: { pr: PullRequest; byUser?: boolean; close: VoidFunction }) => {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const handleUpvote = () => {
-    pullRequestService.upvote(props.pr.id).then(() => setUpvotes(upvotes + 1))
+    const username = user?.username ?? ''
+    if (props.pr.upvoters.includes(username) || props.pr.author === username) {
+      return
+    }
+    pullRequestService.upvote(props.pr.id, username).then(() => setUpvotes(upvotes + 1))
   }
   const handleMerge = () => {
     const goToNewProblem = (problem: Problem) => {
@@ -35,7 +40,7 @@ const PrCard = (props: { pr: PullRequest; byUser?: boolean; close: VoidFunction 
       .merge(props.pr.id)
       .then(() => problemService.getLatest(props.pr.problemId, goToNewProblem))
   }
-  const [upvotes, setUpvotes] = useState(props.pr.upvotes)
+  const [upvotes, setUpvotes] = useState(props.pr.upvoters.length)
 
   return (
     <Card sx={{ my: 2 }}>
@@ -54,9 +59,9 @@ const PrCard = (props: { pr: PullRequest; byUser?: boolean; close: VoidFunction 
             <IconButton onClick={handleUpvote}>
               <ThumbUpIcon />
             </IconButton>
-            <Typography>{upvotes} Approvals</Typography>
           </>
         )}
+        <Typography>{upvotes}/10 Approvals</Typography>
       </CardActions>
     </Card>
   )
@@ -100,7 +105,7 @@ export const PrModal = (props: { prs: PullRequest[] }) => {
             <PrCard
               pr={pr}
               key={pr.id}
-              byUser={pr.author === user?.id}
+              byUser={pr.author === user?.username}
               close={() => setOpen(false)}
             />
           ))}

@@ -59,17 +59,22 @@ public class PullRequestService
     public async Task RemoveAsync(string id) =>
         await _pullRequestCollection.DeleteOneAsync(x => x.Id == id);
 
-    public async Task UpvoteAsync(string id, PullRequest pullRequest)
+    public async Task UpvoteAsync(string username, PullRequest pullRequest)
     {
+        if (pullRequest.Author == username || pullRequest.Upvoters.Exists(x => x == username))
+        {
+            return;
+        }
         var updatedPullRequest = new PullRequest
         {
             Body = pullRequest.Body,
             Id = pullRequest.Id,
             ProblemId = pullRequest.ProblemId,
             Author = pullRequest.Author,
-            Upvotes = pullRequest.Upvotes + 1
+            Upvoters = pullRequest.Upvoters
         };
-        await _pullRequestCollection.ReplaceOneAsync(x => x.Id == id, updatedPullRequest);
+        updatedPullRequest.Upvoters.Add(username);
+        await _pullRequestCollection.ReplaceOneAsync(x => x.Id == pullRequest.Id, updatedPullRequest);
     }
 
     public async Task MergeAsync(PullRequest pullRequest)
@@ -89,8 +94,8 @@ public class PullRequestService
             Author = pullRequest.Author,
             Id = pullRequest.Id,
             ProblemId = pullRequest.ProblemId,
-            // We rest upvotes when the author updates the solution
-            Upvotes = 0
+            // We reset upvoters when the author updates the solution
+            Upvoters = new()
         };
         await UpdateAsync(pullRequest.Id, updatedPullRequest);
     }

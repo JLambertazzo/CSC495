@@ -32,14 +32,14 @@ public class PullRequestController(PullRequestService pullRequestService, UsersS
     }
     
     [HttpPost("upvote")]
-    public async Task<ActionResult<PullRequest>> Upvote(string id)
+    public async Task<ActionResult<PullRequest>> Upvote(string id, string username)
     {
         var pullRequest = await pullRequestService.GetAsync(id);
         if (pullRequest == null)
         {
             return NotFound();
         }
-        await pullRequestService.UpvoteAsync(id, pullRequest);
+        await pullRequestService.UpvoteAsync(username, pullRequest);
         return Ok();
     }
 
