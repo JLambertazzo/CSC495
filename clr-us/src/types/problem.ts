@@ -28,7 +28,7 @@ export type Problem = {
 
 export type AiReview = {
   aiScore: number
-  aiReview: string
+  aiReason: string
 }
 
 export type AiChipSpecs = {
