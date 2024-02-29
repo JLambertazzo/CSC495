@@ -14,43 +14,45 @@ import { ProblemRoutes, RouteList } from '@/enum'
 
 import { Home } from './components/home/home'
 import { Login } from './components/login/login'
-import { AuthProvider } from './context/context'
+import { AuthProvider, SnackbarProvider } from './context/context'
 import { theme } from './themes/theme'
 
 function App() {
   return (
     <AuthProvider>
       <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Router>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            {/* In the future, the id should be replaced by something that makes sense like csc373w24 */}
-            <Route path="/:id" element={<LearnPage />} />
-            <Route path={`/:id/${RouteList.Learn}`} element={<LearnPage />} />
-            {(Object.values(ProblemRoutes) as Array<ProblemRoutes>).map((value) => (
-              <>
-                <Route
-                  key={value}
-                  path={`/:id/${RouteList.Learn}/${value}`}
-                  element={<ProblemPage />}
-                />
-                <Route
-                  key={value}
-                  path={`/:id/${RouteList.Learn}/${value}/${RouteList.Post}`}
-                  element={<PostProblem />}
-                />
-                <Route
-                  key={value}
-                  path={`/:id/${RouteList.Learn}/${value}/:problemId`}
-                  element={<ViewProblem />}
-                />
-              </>
-            ))}
-            <Route path={`/:id/${RouteList.Quizzes}`} element={<QuizPage />} />
-            <Route path="/login" element={<Login />} />
-          </Routes>
-        </Router>
+        <SnackbarProvider>
+          <CssBaseline />
+          <Router>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              {/* In the future, the id should be replaced by something that makes sense like csc373w24 */}
+              <Route path="/:id" element={<LearnPage />} />
+              <Route path={`/:id/${RouteList.Learn}`} element={<LearnPage />} />
+              {(Object.values(ProblemRoutes) as Array<ProblemRoutes>).map((value) => (
+                <>
+                  <Route
+                    key={value}
+                    path={`/:id/${RouteList.Learn}/${value}`}
+                    element={<ProblemPage />}
+                  />
+                  <Route
+                    key={value}
+                    path={`/:id/${RouteList.Learn}/${value}/${RouteList.Post}`}
+                    element={<PostProblem />}
+                  />
+                  <Route
+                    key={value}
+                    path={`/:id/${RouteList.Learn}/${value}/:problemId`}
+                    element={<ViewProblem />}
+                  />
+                </>
+              ))}
+              <Route path={`/:id/${RouteList.Quizzes}`} element={<QuizPage />} />
+              <Route path="/login" element={<Login />} />
+            </Routes>
+          </Router>
+        </SnackbarProvider>
       </ThemeProvider>
     </AuthProvider>
   )

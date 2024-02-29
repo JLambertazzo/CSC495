@@ -12,6 +12,7 @@ import { TextEditor } from '@/components/text-editor/text-editor'
 import useAuth from '@/context/context'
 import { ProblemType, RouteList } from '@/enum'
 import { useCourseCheck, useCurrentCourse, useGetProblemType } from '@/hooks'
+import { useNotification } from '@/hooks/useNotification'
 
 import { IPostProblem } from './type'
 
@@ -22,6 +23,7 @@ export const PostProblem: React.FC = () => {
   const problemType = useGetProblemType()
   const isCLRSProblem = useMemo(() => problemType === ProblemType.CLRS, [problemType])
   const navigate = useNavigate()
+  const notify = useNotification()
 
   const [initialValues, setInitialValues] = useState({
     author: user?.id || '',
@@ -47,7 +49,7 @@ export const PostProblem: React.FC = () => {
         })
       })
     }
-  }, [isCLRSProblem])
+  }, [isCLRSProblem, setInitialValues, initialValues])
 
   const handleSubmit = useCallback(
     async (values: IPostProblem) => {
@@ -62,15 +64,31 @@ export const PostProblem: React.FC = () => {
             offeringId: course,
           })
           .then(() => {
+            notify({
+              message: 'Success! Your CLRS problem is now under review.',
+              severity: 'success',
+            })
             navigate(`/${course}/${RouteList.Learn}/${problemType.toLowerCase()}`)
           })
+          .catch(() =>
+            notify({ message: 'Error: failed to create new problem', severity: 'error' })
+          )
       } else {
-        await postService.postProblemScratch(values, course, problemType).then(() => {
-          navigate(`/${course}/${RouteList.Learn}/${problemType.toLowerCase()}`)
-        })
+        await postService
+          .postProblemScratch(values, course, problemType)
+          .then(() => {
+            notify({
+              message: 'Success! Your new problem is now under review.',
+              severity: 'success',
+            })
+            navigate(`/${course}/${RouteList.Learn}/${problemType.toLowerCase()}`)
+          })
+          .catch(() =>
+            notify({ message: 'Error: failed to create new problem', severity: 'error' })
+          )
       }
     },
-    [course, isCLRSProblem, navigate, problemType]
+    [course, isCLRSProblem, navigate, problemType, notify]
   )
 
   return (
