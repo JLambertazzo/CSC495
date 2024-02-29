@@ -6,7 +6,7 @@ namespace clr_api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class PullRequestController(PullRequestService pullRequestService) : ControllerBase
+public class PullRequestController(PullRequestService pullRequestService, UsersService usersService, ProblemService problemService) : ControllerBase
 {
     [HttpGet("{id:length(24)}")]
     public async Task<ActionResult<PullRequest>> Get(string id)
@@ -22,8 +22,13 @@ public class PullRequestController(PullRequestService pullRequestService) : Cont
     [HttpPost]
     public async Task<ActionResult<PullRequest>> Post(PullRequest newPullRequest)
     {
-        await pullRequestService.CreateAsync(newPullRequest);
-        return CreatedAtAction(nameof(Get), new { id = newPullRequest.Id }, newPullRequest);
+        var created = await pullRequestService.CreateAsync(newPullRequest);
+        if (created)
+        {
+            return CreatedAtAction(nameof(Get), new { id = newPullRequest.Id }, newPullRequest);
+        }
+
+        return Ok();
     }
     
     [HttpPost("upvote")]
