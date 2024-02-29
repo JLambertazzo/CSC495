@@ -17,6 +17,7 @@ import { Link, useLocation } from 'react-router-dom'
 import useAuth from '@/context/context'
 import { RouteList } from '@/enum'
 import { useCurrentCourse, useIsLarge } from '@/hooks'
+import { theme } from '@/themes/theme'
 
 function Tab(props: { text: string; route: string; icon: React.ReactElement }) {
   const location = useLocation()
@@ -30,11 +31,12 @@ function Tab(props: { text: string; route: string; icon: React.ReactElement }) {
       to={`/${courseId}/${props.route}`}
       style={{
         textDecoration: 'none',
+        color: theme.palette.primary.dark,
       }}
     >
       <ListItemButton selected={isSelected}>
         <ListItemIcon>{props.icon}</ListItemIcon>
-        <ListItemText primary={props.text}></ListItemText>
+        <ListItemText primary={props.text} />
       </ListItemButton>
     </Link>
   )
@@ -95,6 +97,7 @@ export const Sidebar: React.FC = () => {
                 textAlign: 'center',
                 px: 1.5,
                 borderRadius: 3,
+                color: theme.palette.primary.dark,
               }}
             >
               CLR:US
