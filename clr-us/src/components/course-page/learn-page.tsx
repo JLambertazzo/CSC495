@@ -41,7 +41,7 @@ export const LearnPage: React.FC = () => {
       <Sidebar />
       <Grid
         container
-        sx={{ p: 1, height: '100%', width: '15%', textAlign: 'left' }}
+        sx={{ p: 1, height: '100%', width: '15%', minWidth: '200px', textAlign: 'left' }}
         alignItems="baseline"
         justifyContent="center"
         direction="column"
