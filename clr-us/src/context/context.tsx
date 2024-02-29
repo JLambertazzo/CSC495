@@ -64,7 +64,12 @@ export function SnackbarProvider({ children }: { children: ReactNode }): JSX.Ele
         open={snackbarProps.open}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert severity={snackbarProps.severity} onClose={onClose} variant="filled">
+        <Alert
+          severity={snackbarProps.severity}
+          onClose={onClose}
+          variant="filled"
+          sx={{ color: 'white' }}
+        >
           {snackbarProps.message}
         </Alert>
       </Snackbar>
