@@ -45,7 +45,11 @@ public class PullRequestService
         if (author is not null && problem is not null &&
             _usersService.RoleInClass(author, problem.Class) == UserRole.Instructor)
         {
-            await _problemService.EditSolution(problem.Id ?? "", newPullRequest.Body, newPullRequest.Author);
+            var result = await _problemService.EditSolution(problem.Id ?? "", newPullRequest.Body, newPullRequest.Author);
+            if (result is not null)
+            {
+                await MoveToNewProblem(problem.Id ?? "", result);
+            }
             return false;
         }
         await _pullRequestCollection.InsertOneAsync(newPullRequest);
@@ -59,23 +63,43 @@ public class PullRequestService
     public async Task RemoveAsync(string id) =>
         await _pullRequestCollection.DeleteOneAsync(x => x.Id == id);
 
-    public async Task UpvoteAsync(string id, PullRequest pullRequest)
+    public async Task UpvoteAsync(string username, PullRequest pullRequest)
     {
+        if (pullRequest.Author == username || pullRequest.Upvoters.Exists(x => x == username))
+        {
+            return;
+        }
         var updatedPullRequest = new PullRequest
         {
             Body = pullRequest.Body,
             Id = pullRequest.Id,
             ProblemId = pullRequest.ProblemId,
             Author = pullRequest.Author,
-            Upvotes = pullRequest.Upvotes + 1
+            Upvoters = pullRequest.Upvoters
         };
-        await _pullRequestCollection.ReplaceOneAsync(x => x.Id == id, updatedPullRequest);
+        updatedPullRequest.Upvoters.Add(username);
+        await _pullRequestCollection.ReplaceOneAsync(x => x.Id == pullRequest.Id, updatedPullRequest);
+    }
+
+    public async Task MoveToNewProblem(string oldProblemId, string newProblemId)
+    {
+        var filter = Builders<PullRequest>.Filter.Eq(x => x.ProblemId, oldProblemId);
+        var updateProblemId = Builders<PullRequest>.Update.Set(x => x.ProblemId, newProblemId);
+        var updateUpvoters = Builders<PullRequest>.Update.Set(x => x.Upvoters, new());
+        var update = Builders<PullRequest>.Update.Combine(updateProblemId, updateUpvoters);
+            
+        await _pullRequestCollection.UpdateManyAsync(filter, update);
     }
 
     public async Task MergeAsync(PullRequest pullRequest)
     {
         // Update Problem with the PR's solution
-        await _problemService.EditSolution(pullRequest.ProblemId, pullRequest.Body, pullRequest.Author);
+        var result = await _problemService.EditSolution(pullRequest.ProblemId, pullRequest.Body, pullRequest.Author);
+
+        if (result is not null)
+        {
+            await MoveToNewProblem(pullRequest.ProblemId, result);
+        }
         
         // Delete the PR
         await RemoveAsync(pullRequest.Id);
@@ -89,8 +113,8 @@ public class PullRequestService
             Author = pullRequest.Author,
             Id = pullRequest.Id,
             ProblemId = pullRequest.ProblemId,
-            // We rest upvotes when the author updates the solution
-            Upvotes = 0
+            // We reset upvoters when the author updates the solution
+            Upvoters = new()
         };
         await UpdateAsync(pullRequest.Id, updatedPullRequest);
     }
