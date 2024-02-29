@@ -2,20 +2,18 @@ import AddIcon from '@mui/icons-material/Add'
 import {
   Tab,
   Box,
-  Card,
   CircularProgress,
   Grid,
   List,
-  ListItem,
   Tabs,
   Typography,
   Divider,
   Button,
 } from '@mui/material'
-import parse from 'html-react-parser'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { ProblemCard } from '@/components/course-page/problem-card'
 import { Sidebar } from '@/components/navbar'
 import useAuth from '@/context/context'
 import { ProblemType, RouteList } from '@/enum'
@@ -27,19 +25,6 @@ import { Problem, ProblemStatus } from '@/types/problem'
 import { CustomTabPanel } from '../tab-panel'
 
 import { problemService } from './problem.service'
-
-const getListItem = (problem: Problem) => (
-  <ListItem>
-    <Card sx={{ p: 3, width: '100%' }}>
-      <Link to={problem.id} style={{ textDecoration: 'none' }}>
-        <Typography variant="h6">{problem.title}</Typography>
-      </Link>
-      <Typography variant="caption">Last Edit by {problem.author}</Typography>
-      <br />
-      <Typography variant="body1">{parse(problem.body)}</Typography>
-    </Card>
-  </ListItem>
-)
 
 export const ProblemPage: React.FC = () => {
   useCourseCheck()
@@ -134,7 +119,11 @@ export const ProblemPage: React.FC = () => {
           <CustomTabPanel value={tab} index={0}>
             <Box>
               {reviewProblems ? (
-                <List>{reviewProblems.map(getListItem)}</List>
+                <List>
+                  {reviewProblems.map((problem, key) => (
+                    <ProblemCard key={key} problem={problem} />
+                  ))}
+                </List>
               ) : (
                 <CircularProgress />
               )}
@@ -143,13 +132,25 @@ export const ProblemPage: React.FC = () => {
         )}
         <CustomTabPanel value={tab} index={getInProgressTabId()}>
           <Box>
-            {postedProblems ? <List>{postedProblems.map(getListItem)}</List> : <CircularProgress />}
+            {postedProblems ? (
+              <List>
+                {postedProblems.map((problem, key) => (
+                  <ProblemCard problem={problem} key={key} />
+                ))}
+              </List>
+            ) : (
+              <CircularProgress />
+            )}
           </Box>
         </CustomTabPanel>
         <CustomTabPanel value={tab} index={getEndorsedTabId()}>
           <Box>
             {endorsedProblems ? (
-              <List>{endorsedProblems.map(getListItem)}</List>
+              <List>
+                {endorsedProblems.map((problem, key) => (
+                  <ProblemCard problem={problem} key={key} />
+                ))}
+              </List>
             ) : (
               <CircularProgress />
             )}
