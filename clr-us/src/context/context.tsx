@@ -1,6 +1,7 @@
-import React, { ReactNode, useContext, useEffect, useState } from 'react'
+import { Alert, Snackbar } from '@mui/material'
+import React, { ReactNode, useCallback, useContext, useEffect, useState } from 'react'
 
-import { IUser } from '../types'
+import { IUser, SnackbarProps } from '../types'
 
 const userContext = React.createContext({
   user: null as IUser | null,
@@ -27,4 +28,56 @@ export function AuthProvider({ children }: { children: ReactNode }): JSX.Element
 
 export default function useAuth() {
   return useContext(userContext)
+}
+
+const defaultProps: SnackbarProps = {
+  open: false,
+  message: '',
+  severity: 'success',
+}
+
+const snackbarContext = React.createContext({
+  snackbarProps: defaultProps,
+  setSnackbarProps: (props: SnackbarProps) => {
+    void props
+  },
+})
+
+export function SnackbarProvider({ children }: { children: ReactNode }): JSX.Element {
+  const local = localStorage.getItem('snackbar')
+  const localProps = local ? JSON.parse(local) : defaultProps
+  const [snackbarProps, setSnackbarProps] = useState<SnackbarProps>(localProps)
+
+  useEffect(() => {
+    localStorage.setItem('snackbar', JSON.stringify(snackbarProps))
+  }, [snackbarProps])
+
+  const onClose = useCallback(() => {
+    setSnackbarProps({ ...snackbarProps, open: false })
+  }, [snackbarProps])
+
+  return (
+    <snackbarContext.Provider value={{ snackbarProps, setSnackbarProps }}>
+      <Snackbar
+        onClose={onClose}
+        autoHideDuration={5000}
+        open={snackbarProps.open}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          severity={snackbarProps.severity}
+          onClose={onClose}
+          variant="filled"
+          sx={{ color: 'white' }}
+        >
+          {snackbarProps.message}
+        </Alert>
+      </Snackbar>
+      {children}
+    </snackbarContext.Provider>
+  )
+}
+
+export function useSnackbar() {
+  return useContext(snackbarContext)
 }
