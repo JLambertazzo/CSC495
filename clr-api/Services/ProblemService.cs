@@ -53,12 +53,12 @@ public class ProblemService
         await _problemCollection.InsertOneAsync(newProblem);
     }
 
-    public async Task EditSolution(string problemId, string newSolution, string username)
+    public async Task<string?> EditSolution(string problemId, string newSolution, string username)
     {
         var problem = await _problemCollection.Find(x => (x.Id == problemId || x.Source == problemId) && x.Latest).FirstOrDefaultAsync();
         if (problem is null || problem.Status == ProblemStatus.Endorsed)
         {
-            return;
+            return null;
         }
 
         var source = problem.Source ?? problem.Id;
@@ -82,6 +82,8 @@ public class ProblemService
         var filter = Builders<Problem>.Filter.Eq(x => x.Id, problem.Id);
         var update = Builders<Problem>.Update.Set(x => x.Latest, false);
         await _problemCollection.UpdateOneAsync(filter, update);
+
+        return newProblem.Id;
     }
 
     public async Task SetStatus(string problemId, ProblemStatus status)

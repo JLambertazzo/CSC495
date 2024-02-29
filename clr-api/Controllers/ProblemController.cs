@@ -7,7 +7,7 @@ namespace clr_api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProblemController(ProblemService problemService, UsersService usersService, ClassService classService, AiService aiService)
+public class ProblemController(ProblemService problemService, UsersService usersService, ClassService classService, AiService aiService, PullRequestService pullRequestService)
     : ControllerBase
 {
 
@@ -114,7 +114,11 @@ public class ProblemController(ProblemService problemService, UsersService users
             return NotFound();
         }
 
-        await problemService.EditSolution(id, update.NewSolution, user.Username);
+        var result = await problemService.EditSolution(id, update.NewSolution, user.Username);
+        if (result is not null)
+        {
+            await pullRequestService.MoveToNewProblem(id, result);
+        }
         return Ok();
     }
 
