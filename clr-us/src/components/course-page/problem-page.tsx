@@ -10,13 +10,13 @@ import {
   Divider,
   Button,
 } from '@mui/material'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { ProblemCard } from '@/components/course-page/problem-card'
 import { Sidebar } from '@/components/navbar'
 import useAuth from '@/context/context'
-import { ProblemType, RouteList } from '@/enum'
+import { RouteList } from '@/enum'
 import { useCourseCheck, useIsLarge } from '@/hooks'
 import { useGetClassId } from '@/hooks/useGetClassId'
 import { useGetProblemType } from '@/hooks/useGetProblemType'
@@ -62,12 +62,7 @@ export const ProblemPage: React.FC = () => {
     isInstructor,
   ])
 
-  const showReview = useCallback(
-    () => isInstructor && problemType?.toLowerCase() !== ProblemType.CLRS.toLowerCase(),
-    [isInstructor, problemType]
-  )
-
-  const getInProgressTabId = () => (showReview() ? 1 : 0)
+  const getInProgressTabId = () => (isInstructor ? 1 : 0)
   const getEndorsedTabId = () => getInProgressTabId() + 1
 
   const largeScreen = useIsLarge()
@@ -102,7 +97,7 @@ export const ProblemPage: React.FC = () => {
             onChange={(_, newValue) => setTab(newValue)}
             aria-label="problem type tabs"
           >
-            {showReview() && (
+            {isInstructor && (
               <Tab label="Review" id="tab-review" aria-controls="simple-tabpanel-0" />
             )}
             <Tab
@@ -118,7 +113,7 @@ export const ProblemPage: React.FC = () => {
           </Tabs>
         </Box>
         <Divider />
-        {showReview() && (
+        {isInstructor && (
           <CustomTabPanel value={tab} index={0}>
             <Box>
               {reviewProblems ? (

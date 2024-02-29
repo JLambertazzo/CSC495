@@ -32,7 +32,7 @@ public class ProblemService
         await _problemCollection.InsertOneAsync(newProblem);
     }
 
-    public async Task CreateFromClrsAsync(int chapter, int problem, string solution, string username, string offeringId)
+    public async Task CreateFromClrsAsync(int chapter, int problem, string solution, string username, string offeringId, Ai aiReview)
     {
         var clrs = await _clrsService.GetAsync(chapter, problem);
         if (clrs is null)
@@ -46,9 +46,10 @@ public class ProblemService
             Author = username,
             Solution = solution,
             Version = 0,
-            Status = ProblemStatus.Posted,
+            Status = ProblemStatus.Review,
             Class = offeringId,
-            Type = ProblemType.Clrs
+            Type = ProblemType.Clrs,
+            AiReview = aiReview
         };
         await _problemCollection.InsertOneAsync(newProblem);
     }

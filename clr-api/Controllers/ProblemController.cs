@@ -93,8 +93,9 @@ public class ProblemController(ProblemService problemService, UsersService users
             return NotFound();
         }
 
+        var aiReview = await aiService.GetAiReview(problemFromClrs.Solution);
         await problemService.CreateFromClrsAsync(problemFromClrs.Chapter, problemFromClrs.Problem,
-            problemFromClrs.Solution, user.Username, problemFromClrs.OfferingId);
+            problemFromClrs.Solution, user.Username, problemFromClrs.OfferingId, aiReview);
         return Ok();
     }
 
