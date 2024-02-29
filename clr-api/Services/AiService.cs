@@ -40,7 +40,10 @@ public class AiService
 
         HttpResponseMessage response = await client.PostAsync(_address, content);
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            return null;
+        }
         var result = await response.Content.ReadAsStringAsync();
         Console.WriteLine(result);
         var responseObj = JsonSerializer.Deserialize<Output>(result.Substring(1, result.Length - 2));
@@ -51,6 +54,14 @@ public class AiService
     public async Task<Ai> GetAiReview(string body)
     {
         var result = await GetAiResponse(GetPrompt(body));
+        if (result is null)
+        {
+            return new Ai
+            {
+                AiScore = -1,
+                AiReason = "Internal Error: Failed to get AI Response"
+            };
+        }
         var aiAnswer = result.Split("<start_of_turn>model")[1];
         var formatted = aiAnswer.Replace("*", "").Split('$');
         var score = formatted[0].Split(':')[1].Trim();

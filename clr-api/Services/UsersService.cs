@@ -69,6 +69,17 @@ public class UsersService
         await _usersCollection.UpdateOneAsync(filter, update);
     }
 
-public async Task RemoveAsync(string id) =>
+    public async Task RemoveAsync(string id) =>
         await _usersCollection.DeleteOneAsync(x => x.Id == id);
+
+    public UserRole? RoleInClass(User user, string classId)
+    {
+        var foundClass = user.Courses.Find(x => x.Oid == classId);
+        if (foundClass is null)
+        {
+            return null;
+        }
+
+        return foundClass.Role;
+    }
 }

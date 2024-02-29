@@ -106,6 +106,10 @@ public class ProblemService
     public async Task<Problem?> GetLatest(string id)
     {
         var current = await _problemCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
+        if (current.Latest)
+        {
+            return current;
+        }
         var match = current.Source ?? current.Id;
         return await _problemCollection.Find(x => x.Source == match && x.Latest).FirstOrDefaultAsync();
     }

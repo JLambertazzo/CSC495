@@ -8,8 +8,9 @@ public class PullRequestService
 {
     private readonly IMongoCollection<PullRequest> _pullRequestCollection;
     private readonly ProblemService _problemService;
+    private readonly UsersService _usersService;
 
-    public PullRequestService(IOptions<ClrApiDatabaseSettings> clrApiDatabaseSettings, ProblemService problemService)
+    public PullRequestService(IOptions<ClrApiDatabaseSettings> clrApiDatabaseSettings, ProblemService problemService, UsersService usersService)
     {
         var mongoClient = new MongoClient(
             clrApiDatabaseSettings.Value.ConnectionString);
@@ -21,6 +22,7 @@ public class PullRequestService
             clrApiDatabaseSettings.Value.PullRequestCollectionName);
 
         _problemService = problemService;
+        _usersService = usersService;
     }
 
     public async Task<List<PullRequest>> GetAsync() =>
@@ -31,9 +33,24 @@ public class PullRequestService
     
     public async Task<List<PullRequest>> GetByProblemAsync(string id) =>
         await _pullRequestCollection.Find(x => x.ProblemId == id).ToListAsync();
-    
-    public async Task CreateAsync(PullRequest newPullRequest) =>
+
+    /**
+     * Create a pull request if user is a student, make the edit immediately if instructor
+     * Returns True if pull request was made, false otherwise
+     */
+    public async Task<Boolean> CreateAsync(PullRequest newPullRequest)
+    {
+        var author = await _usersService.GetByUsername(newPullRequest.Author);
+        var problem = await _problemService.GetLatest(newPullRequest.ProblemId ?? "");
+        if (author is not null && problem is not null &&
+            _usersService.RoleInClass(author, problem.Class) == UserRole.Instructor)
+        {
+            await _problemService.EditSolution(problem.Id ?? "", newPullRequest.Body, newPullRequest.Author);
+            return false;
+        }
         await _pullRequestCollection.InsertOneAsync(newPullRequest);
+        return true;
+    }
 
     
     public async Task UpdateAsync(string id, PullRequest updatedPullRequest) =>
