@@ -23,5 +23,22 @@ export type Problem = {
   solution: string
   type: string
   author: string
-  [key: string]: string
+  aiReview: AiReview | null
+}
+
+export type AiReview = {
+  aiScore: number
+  aiReview: string
+}
+
+export type AiChipSpecs = {
+  bgColor: string
+  color: string
+  text: string
+}
+
+export enum AiScoreClass {
+  LowAttempt = 'Low Attempt',
+  MedAttempt = 'Med Attempt',
+  HighAttempt = 'High Attempt',
 }

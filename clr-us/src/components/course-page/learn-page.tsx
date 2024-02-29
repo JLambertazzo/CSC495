@@ -45,6 +45,7 @@ export const LearnPage: React.FC = () => {
         alignItems="baseline"
         justifyContent="center"
         direction="column"
+        gap={2}
       >
         <Typography variant="h5">Explore Problems:</Typography>
         {categories.map(({ text, route }, i) => (
