@@ -1,3 +1,4 @@
+import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import ThumbUpIcon from '@mui/icons-material/ThumbUp'
 import {
   Box,
@@ -5,13 +6,14 @@ import {
   Card,
   CardActions,
   CardContent,
-  CardHeader,
+  Chip,
   IconButton,
   Modal,
+  Stack,
   Typography,
 } from '@mui/material'
 import parse from 'html-react-parser'
-import { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import useAuth from '@/context/context'
@@ -21,15 +23,30 @@ import { Problem } from '@/types/problem'
 import { problemService } from './problem.service'
 import { pullRequestService } from './pullrequest.service'
 
-const PrCard = (props: { pr: PullRequest; byUser?: boolean; close: VoidFunction }) => {
+const PrCard = (props: {
+  pr: PullRequest
+  byUser?: boolean
+  close: VoidFunction
+  setPr: React.Dispatch<React.SetStateAction<PullRequest[] | null>>
+}) => {
   const navigate = useNavigate()
   const { user } = useAuth()
+  const username = useMemo(() => user?.username ?? '', [user?.username])
+
+  const didUserUpvote = useMemo(
+    () => props.pr.upvoters.includes(username),
+    [props.pr.upvoters, username]
+  )
+
+  const isUserAuthor = useMemo(() => props.pr.author === username, [props.pr.author, username])
+
   const handleUpvote = () => {
-    const username = user?.username ?? ''
-    if (props.pr.upvoters.includes(username) || props.pr.author === username) {
+    if (isUserAuthor) {
       return
     }
-    pullRequestService.upvote(props.pr.id, username).then(() => setUpvotes(upvotes + 1))
+    pullRequestService
+      .upvote(props.pr.id, username)
+      .then(() => pullRequestService.getPullRequests(props.pr.problemId, props.setPr))
   }
   const handleMerge = () => {
     const goToNewProblem = (problem: Problem) => {
@@ -40,28 +57,35 @@ const PrCard = (props: { pr: PullRequest; byUser?: boolean; close: VoidFunction 
       .merge(props.pr.id)
       .then(() => problemService.getLatest(props.pr.problemId, goToNewProblem))
   }
-  const [upvotes, setUpvotes] = useState(props.pr.upvoters.length)
 
   return (
     <Card sx={{ my: 2 }}>
-      <CardHeader title={'Suggested By ' + props.pr.author} />
       <CardContent>
-        <Typography variant="h6">Suggested Solution:</Typography>
-        <Typography variant="body1">{parse(props.pr.body)}</Typography>
+        <Stack gap={1.5} alignItems={'flex-start'}>
+          <Chip
+            sx={{ background: '#e7f2ff', color: '#022D6D' }}
+            icon={<AccountCircleIcon style={{ color: '#022D6D' }} />}
+            label={props.pr.author}
+          />
+          <Typography variant="h6">Suggested Solution:</Typography>
+          <Typography variant="body1">{parse(props.pr.body)}</Typography>
+        </Stack>
       </CardContent>
       <CardActions>
         {props.byUser ? (
-          <Button disabled={upvotes < 10} onClick={handleMerge}>
+          <Button disabled={props.pr.upvoters.length < 10} onClick={handleMerge}>
             Merge
           </Button>
         ) : (
           <>
-            <IconButton onClick={handleUpvote}>
-              <ThumbUpIcon />
+            <IconButton onClick={handleUpvote} disabled={isUserAuthor}>
+              <ThumbUpIcon
+                color={didUserUpvote ? 'success' : isUserAuthor ? 'disabled' : 'inherit'}
+              />
             </IconButton>
           </>
         )}
-        <Typography>{upvotes}/10 Approvals</Typography>
+        <Typography>{props.pr.upvoters.length}/10 Approvals</Typography>
       </CardActions>
     </Card>
   )
@@ -74,14 +98,17 @@ const style = {
   transform: 'translate(-50%, -50%)',
   width: '80vw',
   bgcolor: 'background.paper',
-  border: '2px solid #000',
+  borderRadius: 3,
   boxShadow: 24,
   p: 4,
   maxHeight: '80vh',
   overflow: 'scroll',
 }
 
-export const PrModal = (props: { prs: PullRequest[] }) => {
+export const PrModal = (props: {
+  prs: PullRequest[]
+  setPr: React.Dispatch<React.SetStateAction<PullRequest[] | null>>
+}) => {
   const [open, setOpen] = useState(false)
   const { user } = useAuth()
 
@@ -107,6 +134,7 @@ export const PrModal = (props: { prs: PullRequest[] }) => {
               key={pr.id}
               byUser={pr.author === user?.username}
               close={() => setOpen(false)}
+              setPr={props.setPr}
             />
           ))}
         </Box>

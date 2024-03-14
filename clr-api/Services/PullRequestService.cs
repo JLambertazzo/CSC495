@@ -65,7 +65,7 @@ public class PullRequestService
 
     public async Task UpvoteAsync(string username, PullRequest pullRequest)
     {
-        if (pullRequest.Author == username || pullRequest.Upvoters.Exists(x => x == username))
+        if (pullRequest.Author == username)
         {
             return;
         }
@@ -77,7 +77,15 @@ public class PullRequestService
             Author = pullRequest.Author,
             Upvoters = pullRequest.Upvoters
         };
-        updatedPullRequest.Upvoters.Add(username);
+        if (pullRequest.Upvoters.Exists(x => x == username))
+        {
+            // User upvoted already, they're removing their vote
+            updatedPullRequest.Upvoters.Remove(username);
+        }
+        else
+        {
+            updatedPullRequest.Upvoters.Add(username);
+        }
         await _pullRequestCollection.ReplaceOneAsync(x => x.Id == pullRequest.Id, updatedPullRequest);
     }
 

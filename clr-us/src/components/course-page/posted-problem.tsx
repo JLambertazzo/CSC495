@@ -2,14 +2,14 @@ import EditIcon from '@mui/icons-material/Edit'
 import { Button, Card, CardActions, CardContent, Grid, Typography } from '@mui/material'
 import { Formik, Form, Field, FieldProps, ErrorMessage } from 'formik'
 import parse from 'html-react-parser'
-import { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import 'react-quill/dist/quill.snow.css'
-import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
 
 import useAuth from '@/context/context'
 import { ProblemType } from '@/enum'
 import { useCourseCheck } from '@/hooks'
+import { useNotification } from '@/hooks/useNotification'
 import { IUser, PullRequest } from '@/types'
 import { Problem } from '@/types/problem'
 
@@ -23,7 +23,9 @@ const SolutionEditor = (props: {
   problem?: Problem
   user: IUser | null
   closeEditor: VoidFunction
+  setPr: React.Dispatch<React.SetStateAction<PullRequest[] | null>>
 }) => {
+  const notify = useNotification()
   const [initialValues] = useState<IPREdit>({
     author: props.user?.username ?? '',
     solution: props.problem?.solution ?? '',
@@ -31,17 +33,20 @@ const SolutionEditor = (props: {
   const validationSchema = Yup.object().shape({
     solution: Yup.string().required('Solution attempt is required'),
   })
-  const navigate = useNavigate()
   const handleSubmit = useCallback(
     async (values: IPREdit) => {
-      await pullRequestService.postPullRequest(
-        props.problem?.id ?? '',
-        values.solution,
-        values.author
-      )
-      navigate('..')
+      await pullRequestService
+        .postPullRequest(props.problem?.id ?? '', values.solution, values.author)
+        .then(async () => {
+          props.closeEditor()
+          await pullRequestService.getPullRequests(props.problem?.id ?? '', props.setPr)
+          notify({
+            message: 'Success! Your suggestion has been posted and is up for review.',
+            severity: 'success',
+          })
+        })
     },
-    [props.problem, navigate]
+    [props, notify]
   )
   return (
     <Formik
@@ -103,13 +108,14 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
       </Grid>
       <Grid container direction={'column'} gap={2} width={'100%'} mt={5}>
         <Typography variant={'h5'}>Solution</Typography>
-        {prs && <PrModal prs={prs} />}
+        {prs && <PrModal prs={prs} setPr={setPrs} />}
         <Typography color={'#B0B0B0'}>The student submitted the following solution.</Typography>
         {editing ? (
           <SolutionEditor
             problem={props.problem}
             user={user}
             closeEditor={() => setEditing(false)}
+            setPr={setPrs}
           />
         ) : (
           <Card sx={{ p: 2 }}>
