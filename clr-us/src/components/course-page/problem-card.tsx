@@ -19,7 +19,7 @@ export const ProblemCard = (props: { problem: Problem }) => {
   )
   return (
     <ListItem>
-      <Card sx={{ p: 3, width: '100%' }}>
+      <Card sx={{ p: 3, width: '100%', height: 200 }}>
         <Stack direction={'row'} justifyContent={'space-between'}>
           <Link
             to={props.problem.id}
@@ -40,7 +40,11 @@ export const ProblemCard = (props: { problem: Problem }) => {
         </Stack>
         <Typography variant="caption">Last Edit by {props.problem.author}</Typography>
         <br />
-        <Typography variant="body1">{parse(props.problem.body)}</Typography>
+        <Typography variant="body1">
+          {parse(
+            `<span style='overflow:hidden; display:block; max-height: 75px; text-overflow: ellipsis; white-space: nowrap'>${props.problem.body}</span>`
+          )}
+        </Typography>
       </Card>
     </ListItem>
   )

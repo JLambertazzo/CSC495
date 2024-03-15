@@ -95,7 +95,7 @@ export const PostProblem: React.FC = () => {
     <Grid
       container
       sx={{
-        background: 'rgba(243, 246, 249, 0.6)',
+        background: 'white',
         height: '100vh',
         width: '100%',
       }}
