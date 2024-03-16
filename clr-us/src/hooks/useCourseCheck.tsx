@@ -8,6 +8,16 @@ const useCurrentCourse = () => {
   return location.pathname.split('/')[1]
 }
 
+const useUserRole = () => {
+  const { user } = useAuth()
+  const courseID = useCurrentCourse()
+
+  if (!user) {
+    return undefined
+  }
+  return user.courses.find((course) => course.oid === courseID)?.role
+}
+
 const useCourseCheck = () => {
   const { user } = useAuth()
   const navigate = useNavigate()
@@ -51,4 +61,4 @@ const useInstructorCheck = () => {
   }, [courseID, navigate, user])
 }
 
-export { useCurrentCourse, useCourseCheck, useInstructorCheck }
+export { useCurrentCourse, useCourseCheck, useInstructorCheck, useUserRole }

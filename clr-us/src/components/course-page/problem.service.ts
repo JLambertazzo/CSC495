@@ -44,6 +44,12 @@ class ProblemService {
       .then(() => navigate('..'))
       .catch((err) => err)
 
+  endorseProblem = (navigate: NavigateFunction, id: string) => () =>
+    axios
+      .patch(`/Problem/status/${id}/${ProblemStatus.Endorsed}`)
+      .then(() => navigate('..'))
+      .catch((err) => err)
+
   deleteProblem = (navigate: NavigateFunction, id: string) => () =>
     axios
       .delete(`/Problem/${id}`)

@@ -2,21 +2,20 @@ import EditIcon from '@mui/icons-material/Edit'
 import { Button, Card, CardActions, CardContent, Grid, Typography } from '@mui/material'
 import { Formik, Form, Field, FieldProps, ErrorMessage } from 'formik'
 import parse from 'html-react-parser'
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import 'react-quill/dist/quill.snow.css'
 import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
 
 import useAuth from '@/context/context'
 import { ProblemType } from '@/enum'
-import { useCourseCheck } from '@/hooks'
+import { useCourseCheck, useUserRole } from '@/hooks'
 import { useNotification } from '@/hooks/useNotification'
-import { IUser, PullRequest } from '@/types'
+import { IUser, UserRoles } from '@/types'
 import { Problem } from '@/types/problem'
 
 import { TextEditor } from '../text-editor/text-editor'
 
-import { PrModal } from './pr-modal'
 import { problemService } from './problem.service'
 import { pullRequestService } from './pullrequest.service'
 import { IPREdit } from './type'
@@ -25,7 +24,7 @@ const SolutionEditor = (props: {
   problem?: Problem
   user: IUser | null
   closeEditor: VoidFunction
-  setPr: React.Dispatch<React.SetStateAction<PullRequest[] | null>>
+  forceRefresh: VoidFunction
 }) => {
   const notify = useNotification()
   const [initialValues] = useState<IPREdit>({
@@ -41,9 +40,9 @@ const SolutionEditor = (props: {
         .postPullRequest(props.problem?.id ?? '', values.solution, values.author)
         .then(async () => {
           props.closeEditor()
-          await pullRequestService.getPullRequests(props.problem?.id ?? '', props.setPr)
+          props.forceRefresh()
           notify({
-            message: 'Success! Your suggestion has been posted and is up for review.',
+            message: 'Success! Your edits have been applied.',
             severity: 'success',
           })
         })
@@ -86,18 +85,16 @@ const SolutionEditor = (props: {
   )
 }
 
-export const PostedProblem = (props: { problemType: ProblemType; problem?: Problem }) => {
+export const EndorsedProblem = (props: {
+  problemType: ProblemType
+  problem?: Problem
+  forceRefresh: VoidFunction
+}) => {
   useCourseCheck()
   const navigate = useNavigate()
   const { user } = useAuth()
   const [editing, setEditing] = useState(false)
-  const [prs, setPrs] = useState<PullRequest[] | null>(null)
-
-  useEffect(() => {
-    if (props.problem) {
-      pullRequestService.getPullRequests(props.problem.id, setPrs)
-    }
-  }, [props.problem])
+  const role = useUserRole()
 
   return (
     <Grid p={5} width={'70vw'}>
@@ -111,40 +108,44 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
       </Grid>
       <Grid container direction={'column'} gap={2} width={'100%'} mt={5}>
         <Typography variant={'h5'}>Solution</Typography>
-        {prs && <PrModal prs={prs} setPr={setPrs} />}
-        <Typography color={'#B0B0B0'}>The student submitted the following solution.</Typography>
-        {editing ? (
+        <Typography color={'#B0B0B0'}>The instructor endorsed the following solution.</Typography>
+        {role === UserRoles.Instructor && editing ? (
           <SolutionEditor
             problem={props.problem}
             user={user}
             closeEditor={() => setEditing(false)}
-            setPr={setPrs}
+            forceRefresh={props.forceRefresh}
           />
         ) : (
           <Card sx={{ p: 2 }}>
             <CardContent>{parse(props.problem?.solution ?? '')}</CardContent>
-            <CardActions>
-              <Button
-                endIcon={<EditIcon />}
-                sx={{ color: 'black' }}
-                variant="outlined"
-                onClick={() => setEditing(true)}
-              >
-                Edit
-              </Button>
-            </CardActions>
+            {role === UserRoles.Instructor && (
+              <CardActions>
+                <Button
+                  endIcon={<EditIcon />}
+                  sx={{ color: 'black' }}
+                  variant="outlined"
+                  onClick={() => setEditing(true)}
+                >
+                  Edit
+                </Button>
+              </CardActions>
+            )}
           </Card>
         )}
       </Grid>
-      <Grid>
-        <Button
-          onClick={problemService.endorseProblem(navigate, props.problem?.id ?? '')}
-          variant={'contained'}
-          sx={{ mr: 1, mt: 2 }}
-        >
-          Endorse
-        </Button>
-      </Grid>
+      {role === UserRoles.Instructor && (
+        <Grid>
+          <Button
+            onClick={problemService.endorseProblem(navigate, props.problem?.id ?? '')}
+            variant={'outlined'}
+            sx={{ mr: 1, mt: 2 }}
+            color="error"
+          >
+            Revoke Endorsement
+          </Button>
+        </Grid>
+      )}
     </Grid>
   )
 }
