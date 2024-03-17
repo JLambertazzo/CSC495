@@ -4,7 +4,6 @@ import { Formik, Form, Field, FieldProps, ErrorMessage } from 'formik'
 import parse from 'html-react-parser'
 import { useCallback, useState } from 'react'
 import 'react-quill/dist/quill.snow.css'
-import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
 
 import useAuth from '@/context/context'
@@ -16,7 +15,6 @@ import { Problem } from '@/types/problem'
 
 import { TextEditor } from '../text-editor/text-editor'
 
-import { problemService } from './problem.service'
 import { pullRequestService } from './pullrequest.service'
 import { IPREdit } from './type'
 
@@ -91,7 +89,6 @@ export const EndorsedProblem = (props: {
   forceRefresh: VoidFunction
 }) => {
   useCourseCheck()
-  const navigate = useNavigate()
   const { user } = useAuth()
   const [editing, setEditing] = useState(false)
   const role = useUserRole()
@@ -134,18 +131,6 @@ export const EndorsedProblem = (props: {
           </Card>
         )}
       </Grid>
-      {role === UserRoles.Instructor && (
-        <Grid>
-          <Button
-            onClick={problemService.endorseProblem(navigate, props.problem?.id ?? '')}
-            variant={'outlined'}
-            sx={{ mr: 1, mt: 2 }}
-            color="error"
-          >
-            Revoke Endorsement
-          </Button>
-        </Grid>
-      )}
     </Grid>
   )
 }
