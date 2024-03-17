@@ -13,6 +13,7 @@ export interface ICourse {
   role: UserRoles
 }
 
+
 export enum UserRoles {
   Student = 'Student',
   Instructor = 'Instructor',
