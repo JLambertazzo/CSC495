@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import { Roles } from '@/types'
+import { UserRoles } from '@/types'
 
 import useAuth from '../context/context'
 
@@ -53,7 +53,7 @@ const useInstructorCheck = () => {
       if (courseID) {
         // Check if the user is instructor in this course
         const isInstructor = user.courses.some(
-          (course) => course.oid === courseID && course.role === Roles.Instructor
+          (course) => course.oid === courseID && course.role === UserRoles.Instructor
         )
         if (!isInstructor) navigate('/')
       } else {

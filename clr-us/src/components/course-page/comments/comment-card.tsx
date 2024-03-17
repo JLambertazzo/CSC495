@@ -16,7 +16,7 @@ import React, { useMemo } from 'react'
 import { UserAvatar } from '@/components/avatar/user-avatar'
 import useAuth from '@/context/context'
 import { useCurrentCourse } from '@/hooks'
-import { Roles } from '@/types'
+import { UserRoles } from '@/types'
 
 const DeleteModal: React.FC<{
   open: boolean
@@ -58,7 +58,9 @@ export const CommentCard: React.FC<{
   const canDelete = useMemo(
     () =>
       author === user?.username ||
-      user?.courses.some((course) => course.oid === courseID && course.role === Roles.Instructor),
+      user?.courses.some(
+        (course) => course.oid === courseID && course.role === UserRoles.Instructor
+      ),
     [author, courseID, user?.courses, user?.username]
   )
 
