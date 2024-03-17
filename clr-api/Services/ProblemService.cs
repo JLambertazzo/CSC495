@@ -117,4 +117,25 @@ public class ProblemService
         return await _problemCollection.Find(x => x.Source == match && x.Latest).FirstOrDefaultAsync();
     }
 
+    public async Task<List<String>?> GetAuthors(string id)
+    {
+        var target = await GetLatest(id);
+        if (target is null)
+        {
+            return null;
+        }
+
+        List<Problem> allVersions;
+        if (target.Source is null)
+        {
+            allVersions = new List<Problem>(){target};
+        }
+        else
+        {
+            allVersions = await _problemCollection.Find(x => x.Id == target.Source || x.Source == target.Source).ToListAsync();
+        }
+
+        return allVersions.Select(x => x.Author).Distinct().ToList();
+    }
+
 }
