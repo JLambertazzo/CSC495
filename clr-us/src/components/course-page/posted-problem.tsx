@@ -1,11 +1,14 @@
+import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import EditIcon from '@mui/icons-material/Edit'
-import { Button, Card, CardActions, CardContent, Grid, Typography } from '@mui/material'
+import LightbulbIcon from '@mui/icons-material/Lightbulb'
+import { Button, Card, CardActions, CardContent, Chip, Grid, Typography } from '@mui/material'
 import { Formik, Form, Field, FieldProps, ErrorMessage } from 'formik'
 import parse from 'html-react-parser'
 import React, { useCallback, useEffect, useState } from 'react'
 import 'react-quill/dist/quill.snow.css'
 import * as Yup from 'yup'
 
+import { ProblemComments } from '@/components/course-page/comments'
 import useAuth from '@/context/context'
 import { ProblemType } from '@/enum'
 import { useCourseCheck } from '@/hooks'
@@ -102,14 +105,23 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
         {props.problemType} Problem
       </Typography>
       <Grid container py={3} direction={'column'} gap={2} width={'100%'}>
-        <Typography variant={'h5'}>Problem</Typography>
         <Typography variant="h6">{props.problem?.title}</Typography>
+        <Chip
+          sx={{ background: '#e7f2ff', color: '#022D6D', alignSelf: 'flex-start' }}
+          icon={<AccountCircleIcon style={{ color: '#022D6D' }} />}
+          label={props.problem?.author ?? ''}
+        />
         <Card sx={{ p: 2 }}>{parse(props.problem?.body ?? '')}</Card>
       </Grid>
       <Grid container direction={'column'} gap={2} width={'100%'} mt={5}>
         <Typography variant={'h5'}>Solution</Typography>
         {prs && <PrModal prs={prs} setPr={setPrs} />}
-        <Typography color={'#B0B0B0'}>The student submitted the following solution.</Typography>
+        <Chip
+          sx={{ background: '#e7f2ff', color: '#022D6D', alignSelf: 'flex-start' }}
+          icon={<LightbulbIcon style={{ color: '#022D6D' }} />}
+          label={`By ${props.problem?.author ?? ''}`}
+        />
+        {/*<Typography color={'#B0B0B0'}>The student submitted the following solution.</Typography>*/}
         {editing ? (
           <SolutionEditor
             problem={props.problem}
@@ -132,6 +144,9 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
             </CardActions>
           </Card>
         )}
+        <Grid container mt={2}>
+          <ProblemComments problemId={props.problem?.id ?? ''} />
+        </Grid>
       </Grid>
     </Grid>
   )
