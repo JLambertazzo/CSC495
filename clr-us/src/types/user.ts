@@ -10,10 +10,11 @@ export interface IUser {
 export interface ICourse {
   oid: string
   code: string
-  role: Roles
+  role: UserRoles
 }
 
-export enum Roles {
+
+export enum UserRoles {
   Student = 'Student',
   Instructor = 'Instructor',
 }

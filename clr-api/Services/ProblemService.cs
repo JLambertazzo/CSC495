@@ -57,7 +57,7 @@ public class ProblemService
     public async Task<string?> EditSolution(string problemId, string newSolution, string username)
     {
         var problem = await _problemCollection.Find(x => (x.Id == problemId || x.Source == problemId) && x.Latest).FirstOrDefaultAsync();
-        if (problem is null || problem.Status == ProblemStatus.Endorsed)
+        if (problem is null)
         {
             return null;
         }
@@ -115,6 +115,27 @@ public class ProblemService
         }
         var match = current.Source ?? current.Id;
         return await _problemCollection.Find(x => x.Source == match && x.Latest).FirstOrDefaultAsync();
+    }
+
+    public async Task<List<String>?> GetAuthors(string id)
+    {
+        var target = await GetLatest(id);
+        if (target is null)
+        {
+            return null;
+        }
+
+        List<Problem> allVersions;
+        if (target.Source is null)
+        {
+            allVersions = new List<Problem>(){target};
+        }
+        else
+        {
+            allVersions = await _problemCollection.Find(x => x.Id == target.Source || x.Source == target.Source).ToListAsync();
+        }
+
+        return allVersions.Select(x => x.Author).Distinct().ToList();
     }
 
 }

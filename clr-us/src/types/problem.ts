@@ -17,7 +17,7 @@ export enum ProblemStatus {
 
 export type Problem = {
   id: string
-  status: string
+  status: ProblemStatus
   title: string
   body: string
   solution: string
