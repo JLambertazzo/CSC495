@@ -57,7 +57,7 @@ public class ProblemService
     public async Task<string?> EditSolution(string problemId, string newSolution, string username)
     {
         var problem = await _problemCollection.Find(x => (x.Id == problemId || x.Source == problemId) && x.Latest).FirstOrDefaultAsync();
-        if (problem is null || problem.Status == ProblemStatus.Endorsed)
+        if (problem is null)
         {
             return null;
         }

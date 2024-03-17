@@ -7,6 +7,7 @@ import { ProblemStatus } from '@/enum'
 import { useGetProblemId, useGetProblemType } from '@/hooks'
 import { Problem } from '@/types/problem'
 
+import { EndorsedProblem } from './endorsed-problem'
 import { PostedProblem } from './posted-problem'
 import { problemService } from './problem.service'
 import { ReviewProblem } from './review-problem'
@@ -15,7 +16,9 @@ export const ViewProblem: React.FC = () => {
   const problemType = useGetProblemType()
   const problemId = useGetProblemId()
   const [problem, setProblem] = useState<Problem | undefined>(undefined)
-  const [inReview, setInReview] = useState(false)
+  const [status, setStatus] = useState<ProblemStatus>(ProblemStatus.Posted)
+
+  const forceRefresh = () => problemService.getProblem(problemId, setProblem)
 
   useEffect(() => {
     problemService.getProblem(problemId, setProblem)
@@ -25,8 +28,8 @@ export const ViewProblem: React.FC = () => {
     if (!problem) {
       return
     }
-    setInReview(problem.status === ProblemStatus.Review)
-  }, [problem, setInReview])
+    setStatus(problem.status)
+  }, [problem, setStatus])
 
   return (
     <Grid
@@ -38,10 +41,12 @@ export const ViewProblem: React.FC = () => {
       }}
     >
       <Sidebar />
-      {inReview ? (
+      {status === ProblemStatus.Review ? (
         <ReviewProblem problemType={problemType} problem={problem} />
-      ) : (
+      ) : status === ProblemStatus.Posted ? (
         <PostedProblem problemType={problemType} problem={problem} />
+      ) : (
+        <EndorsedProblem problemType={problemType} problem={problem} forceRefresh={forceRefresh} />
       )}
     </Grid>
   )
