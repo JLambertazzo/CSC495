@@ -22,4 +22,6 @@ public class Comment
 
     [BsonElement("body")]
     public string Body { get; set; } = null!;
+
+    [BsonElement("numReplies")] public int NumReplies { get; set; } = 0;
 }

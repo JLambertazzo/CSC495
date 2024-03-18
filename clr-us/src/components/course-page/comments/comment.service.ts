@@ -1,11 +1,17 @@
 import { axios } from '@/components/services/axios'
 
-import { IPostComment } from './type'
+import { IPostComment, Comment } from './type'
 
 class CommentService {
   getComments = (problemId: string) =>
     axios
       .get(`/Comment/${problemId}`)
+      .then((res) => res.data.filter((el: Comment) => !el.replyTo))
+      .catch((err) => err)
+
+  getReplies = (commentId: string) =>
+    axios
+      .get(`/Comment/${commentId}/replies`)
       .then((res) => res.data)
       .catch((err) => err)
 

@@ -14,6 +14,8 @@ import parse from 'html-react-parser'
 import React, { useMemo } from 'react'
 
 import { UserAvatar } from '@/components/avatar/user-avatar'
+import { RepliesAccordion } from '@/components/course-page/comments/replies-accordion'
+import { ReplyButton } from '@/components/course-page/comments/reply-button'
 import useAuth from '@/context/context'
 import { useCurrentCourse } from '@/hooks'
 import { UserRoles } from '@/types'
@@ -49,9 +51,12 @@ const DeleteModal: React.FC<{
 export const CommentCard: React.FC<{
   author: string
   body: string
-  commentId: string
+  id: string
+  numReplies: number
+  problemId: string
   handleDelete: (commentId: string) => Promise<void>
-}> = ({ author, body, commentId, handleDelete }) => {
+  fetchComments: () => Promise<void>
+}> = ({ author, body, id, handleDelete, numReplies, problemId, fetchComments }) => {
   const { user } = useAuth()
   const courseID = useCurrentCourse()
 
@@ -81,6 +86,15 @@ export const CommentCard: React.FC<{
         <Grid container direction={'column'}>
           <Typography fontWeight={600}>{author}</Typography>
           <Typography>{parse(body)}</Typography>
+
+          <ReplyButton originalCommentId={id} problemId={problemId} fetchComments={fetchComments} />
+          {numReplies > 0 && (
+            <RepliesAccordion
+              numReplies={numReplies}
+              originalCommentId={id}
+              fetchComments={fetchComments}
+            />
+          )}
         </Grid>
       </Grid>
       <Grid item>
@@ -94,7 +108,7 @@ export const CommentCard: React.FC<{
         open={openDelete}
         handleClose={handleClose}
         handleDelete={async () => {
-          await handleDelete(commentId)
+          await handleDelete(id)
           handleClose()
         }}
       />

@@ -22,7 +22,7 @@ export const ProblemComments = (props: { problemId: string }) => {
   const [initialValues] = useState({
     author: user?.username || '',
     body: '',
-    replyTo: undefined,
+    replyTo: null,
     commentOn: props.problemId,
   } as IPostComment)
 
@@ -57,6 +57,7 @@ export const ProblemComments = (props: { problemId: string }) => {
         .postComment({
           ...values,
           commentOn: props.problemId,
+          numReplies: 0,
         })
         .then(() => {
           helpers.setSubmitting(false)
@@ -132,10 +133,10 @@ export const ProblemComments = (props: { problemId: string }) => {
           {comments.map((comment, index) => (
             <Grid container gap={2} direction="column" key={comment.id}>
               <CommentCard
-                author={comment.author}
-                body={comment.body}
-                commentId={comment.id}
+                {...comment}
                 handleDelete={handleDeleteComment}
+                problemId={comment.commentOn}
+                fetchComments={fetchComments}
               />
               {index < comments.length - 1 && <Divider />}
             </Grid>

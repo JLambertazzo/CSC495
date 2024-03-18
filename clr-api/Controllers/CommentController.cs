@@ -21,6 +21,10 @@ public class CommentController(CommentService commentService, UsersService users
     [HttpGet("{id:length(24)}")]
     public async Task<List<Comment>> Get(string id) =>
         await commentService.GetCommentsOnAsync(id);
+    
+    [HttpGet("{id:length(24)}/replies")]
+    public async Task<List<Comment>> GetReplies(string id) =>
+        await commentService.GetRepliesOnAsync(id);
 
     [HttpPost]
     public async Task<IActionResult> Post(Comment newComment)
@@ -30,8 +34,12 @@ public class CommentController(CommentService commentService, UsersService users
         {
             return NotFound();
         }
-
         await commentService.CreateAsync(newComment);
+        
+        if (newComment.ReplyTo != null)
+        {
+            await commentService.UpdateReplies(newComment.ReplyTo);
+        }
         return Ok();
     }
 
@@ -40,6 +48,13 @@ public class CommentController(CommentService commentService, UsersService users
         await commentService.UpdateAsync(commentUpdateData.id, commentUpdateData.newBody);
 
     [HttpDelete("{id:length(24)}")]
-    public async Task Delete(string id) =>
+    public async Task Delete(string id) 
+    {
+        var comment = await commentService.GetByIdAsync(id);
+        if (comment != null && comment.ReplyTo != null)
+        {
+            await commentService.DeleteReply(comment.ReplyTo);
+        }
         await commentService.RemoveAsync(id);
+    }
 }
