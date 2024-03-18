@@ -95,10 +95,12 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
   const { user } = useAuth()
   const [editing, setEditing] = useState(false)
   const [prs, setPrs] = useState<PullRequest[] | null>(null)
+  const [solutionAuthors, setSolutionAuthors] = useState([])
 
   useEffect(() => {
     if (props.problem) {
       pullRequestService.getPullRequests(props.problem.id, setPrs)
+      problemService.getSolutionAuthors(props.problem.id).then((res) => setSolutionAuthors(res))
     }
   }, [props.problem])
 
@@ -122,9 +124,8 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
         <Chip
           sx={{ background: '#e7f2ff', color: '#022D6D', alignSelf: 'flex-start' }}
           icon={<LightbulbIcon style={{ color: '#022D6D' }} />}
-          label={`By ${props.problem?.author ?? ''}`}
+          label={`By ${solutionAuthors.join(', ')}`}
         />
-        {/*<Typography color={'#B0B0B0'}>The student submitted the following solution.</Typography>*/}
         {editing ? (
           <SolutionEditor
             problem={props.problem}
@@ -147,18 +148,18 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
             </CardActions>
           </Card>
         )}
+        <Grid>
+          <Button
+            onClick={problemService.endorseProblem(navigate, props.problem?.id ?? '')}
+            variant={'contained'}
+            sx={{ mr: 1, mt: 2 }}
+          >
+            Endorse
+          </Button>
+        </Grid>
         <Grid container mt={2}>
           <ProblemComments problemId={props.problem?.id ?? ''} />
         </Grid>
-      </Grid>
-      <Grid>
-        <Button
-          onClick={problemService.endorseProblem(navigate, props.problem?.id ?? '')}
-          variant={'contained'}
-          sx={{ mr: 1, mt: 2 }}
-        >
-          Endorse
-        </Button>
       </Grid>
     </Grid>
   )
