@@ -44,7 +44,7 @@ export const ViewProblem: React.FC = () => {
       {status === ProblemStatus.Review ? (
         <ReviewProblem problemType={problemType} problem={problem} />
       ) : status === ProblemStatus.Posted ? (
-        <PostedProblem problemType={problemType} problem={problem} />
+        <PostedProblem problemType={problemType} problem={problem} forceRefresh={forceRefresh} />
       ) : (
         <EndorsedProblem problemType={problemType} problem={problem} forceRefresh={forceRefresh} />
       )}
