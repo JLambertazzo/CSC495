@@ -21,8 +21,29 @@ public class CommentService
             clrApiDatabaseSettings.Value.CommentCollectionName);
     }
 
-    public async Task<List<Comment>> GetCommentsOnAsync(string id) =>
-        await _commentCollection.Find(x => x.CommentOn == id).ToListAsync();
+    public async Task<Comment?> GetByIdAsync(string id) =>
+        await _commentCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
+    
+    public async Task<List<Comment>> GetCommentsOnAsync(string uuid) =>
+        await _commentCollection.Find(x => x.CommentOn == uuid).ToListAsync();
+
+    public async Task<List<Comment>> GetRepliesOnAsync(string commentId) =>
+        await _commentCollection.Find(x => x.ReplyTo == commentId).ToListAsync();
+
+    public async Task UpdateReplies(string commentId)
+    {
+        var filter = Builders<Comment>.Filter.Eq(x => x.Id, commentId);
+        var update = Builders<Comment>.Update.Inc(x => x.NumReplies, 1);
+        await _commentCollection.FindOneAndUpdateAsync(filter, update);
+    }
+    
+    public async Task DeleteReply(string commentId)
+    {
+        var filter = Builders<Comment>.Filter.Eq(x => x.Id, commentId);
+        var update = Builders<Comment>.Update.Inc(x => x.NumReplies, -1);
+        await _commentCollection.FindOneAndUpdateAsync(x => x.Id == commentId && x.NumReplies > 0, update);
+    }
+    
 
     public async Task CreateAsync(Comment newComment) =>
         await _commentCollection.InsertOneAsync(newComment);

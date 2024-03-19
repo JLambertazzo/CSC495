@@ -46,16 +46,16 @@ const PrCard = (props: {
     }
     pullRequestService
       .upvote(props.pr.id, username)
-      .then(() => pullRequestService.getPullRequests(props.pr.problemId, props.setPr))
+      .then(() => pullRequestService.getPullRequests(props.pr.problemUuid, props.setPr))
   }
   const handleMerge = () => {
     const goToNewProblem = (problem: Problem) => {
-      navigate(`./../${problem.id}`)
+      navigate(`./../${problem.uuid}`)
       props.close()
     }
     pullRequestService
       .merge(props.pr.id)
-      .then(() => problemService.getLatest(props.pr.problemId, goToNewProblem))
+      .then(() => problemService.getLatest(props.pr.problemUuid, goToNewProblem))
   }
 
   return (

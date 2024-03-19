@@ -35,7 +35,7 @@ const SolutionEditor = (props: {
   const handleSubmit = useCallback(
     async (values: IPREdit) => {
       await pullRequestService
-        .postPullRequest(props.problem?.id ?? '', values.solution, values.author)
+        .postPullRequest(props.problem?.uuid ?? '', values.solution, values.author)
         .then(async () => {
           props.closeEditor()
           props.forceRefresh()

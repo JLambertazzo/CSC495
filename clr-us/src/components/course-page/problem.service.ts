@@ -24,33 +24,39 @@ class ProblemService {
       .catch((err) => err)
   }
 
-  getProblem = (id: string, setProblem: (problem: Problem) => void) =>
+  getProblem = (uuid: string, setProblem: (problem: Problem) => void) =>
     axios
-      .get(`/Problem/${id}`)
+      .get(`/Problem/${uuid}`)
       .then((res) => setProblem(res.data))
       .catch((err) => err)
 
-  getLatest = (id: string, setLatest: (problem: Problem) => void) =>
+  getLatest = (uuid: string, setLatest: (problem: Problem) => void) =>
     axios
-      .get(`/Problem/latest/${id}`)
+      .get(`/Problem/latest/${uuid}`)
       .then((res) => setLatest(res.data))
       .catch((err) => err)
 
-  approveProblem = (id: string) =>
+  approveProblem = (uuid: string) =>
     axios
-      .patch(`/Problem/status/${id}/${ProblemStatus.Posted}`)
+      .patch(`/Problem/status/${uuid}/${ProblemStatus.Posted}`)
       .then((res) => res.data)
       .catch((err) => err)
 
-  endorseProblem = (id: string) =>
+  endorseProblem = (uuid: string) =>
     axios
-      .patch(`/Problem/status/${id}/${ProblemStatus.Endorsed}`)
+      .patch(`/Problem/status/${uuid}/${ProblemStatus.Endorsed}`)
       .then((res) => res.data)
       .catch((err) => err)
 
-  deleteProblem = (id: string) =>
+  deleteProblem = (uuid: string) =>
     axios
-      .delete(`/Problem/${id}`)
+      .delete(`/Problem/${uuid}`)
+      .then((res) => res.data)
+      .catch((err) => err)
+
+  getSolutionAuthors = (problemUuid: string) =>
+    axios
+      .get(`/Problem/authors/${problemUuid}`)
       .then((res) => res.data)
       .catch((err) => err)
 }

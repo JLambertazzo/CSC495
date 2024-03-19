@@ -38,7 +38,7 @@ export const ReviewProblem = (props: { problemType: ProblemType; problem?: Probl
 
   const approve = () =>
     problemService
-      .approveProblem(props.problem?.id ?? '')
+      .approveProblem(props.problem?.uuid ?? '')
       .then(() => {
         notify({
           message: 'Success! Solution has been approved and is posted.',
@@ -50,7 +50,7 @@ export const ReviewProblem = (props: { problemType: ProblemType; problem?: Probl
 
   const reject = () =>
     problemService
-      .deleteProblem(props.problem?.id ?? '')
+      .deleteProblem(props.problem?.uuid ?? '')
       .then(() => {
         notify({
           message: 'Success! Solution has been deleted.',

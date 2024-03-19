@@ -42,7 +42,6 @@ export const PostProblem: React.FC = () => {
     if (isCLRSProblem) {
       // TODO: Make this dynamic, problem to be selected in a dropdown
       postService.getCLRSProblem(15, 1).then((res) => {
-        console.log('i happen')
         setInitialValues({
           ...initialValues,
           ...res,

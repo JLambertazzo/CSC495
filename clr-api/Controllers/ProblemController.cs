@@ -7,7 +7,7 @@ namespace clr_api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProblemController(ProblemService problemService, UsersService usersService, ClassService classService, AiService aiService, PullRequestService pullRequestService)
+public class ProblemController(ProblemService problemService, UsersService usersService, ClassService classService, AiService aiService)
     : ControllerBase
 {
 
@@ -33,10 +33,10 @@ public class ProblemController(ProblemService problemService, UsersService users
         [JsonProperty] public string UserId { get; set; } = userId;
     }
         
-    [HttpGet("{id:length(24)}")]
-    public async Task<ActionResult<Problem>> Get(string id)
+    [HttpGet("{uuid}")]
+    public async Task<ActionResult<Problem>> Get(string uuid)
     {
-        var problem = await problemService.GetAsync(id);
+        var problem = await problemService.GetAsync(uuid);
         if (problem is null)
         {
             return NotFound();
@@ -45,29 +45,21 @@ public class ProblemController(ProblemService problemService, UsersService users
         return problem;
     }
 
-    [HttpGet("history/{id:length(24)}")]
-    public async Task<ActionResult<List<Problem>>> GetEditHistory(string id)
-    {
-        var problem = await problemService.GetAsync(id);
-        if (problem is null)
-        {
-            return NotFound();
-        }
-        return await problemService.GetBySourceAsync(problem.Source ?? id);
-    }
-        
+    [HttpGet("history/{uuid}")]
+    public async Task<ActionResult<List<Problem>?>> GetEditHistory(string uuid) =>
+        await problemService.GetByUuid(uuid);
 
-    [HttpGet("class/{id:length(24)}")]
-    public async Task<ActionResult<List<Problem>>> GetByClass(string id, ProblemStatus? status) => 
-        await problemService.GetByClassAsync(id, status);
+    [HttpGet("class/{oid:length(24)}")]
+    public async Task<ActionResult<List<Problem>>> GetByClass(string oid, ProblemStatus? status) => 
+        await problemService.GetByClassAsync(oid, status);
 
-    [HttpGet("latest/{id:length(24)}")]
-    public async Task<ActionResult<Problem?>> GetLatest(string id) =>
-        await problemService.GetLatest(id);
+    [HttpGet("latest/{uuid}")]
+    public async Task<ActionResult<Problem?>> GetLatest(string uuid) =>
+        await problemService.GetLatest(uuid);
 
-    [HttpGet("authors/{id:length(24)}")]
-    public async Task<ActionResult<List<String>?>> GetAuthors(string id) =>
-        await problemService.GetAuthors(id);
+    [HttpGet("authors/{uuid}")]
+    public async Task<ActionResult<List<String>?>> GetAuthors(string uuid) =>
+        await problemService.GetAuthors(uuid);
 
     [HttpPost]
     public async Task<ActionResult<Problem>> Post([FromBody] ProblemFromScratch problemFromScratch)
@@ -84,7 +76,7 @@ public class ProblemController(ProblemService problemService, UsersService users
         await problemService.CreateAsync(problemFromScratch.Problem,
             user.Username,
             problemFromScratch.OfferingId);
-        return CreatedAtAction(nameof(Get), new { id = problemFromScratch.Problem.Id }, problemFromScratch.Problem);
+        return CreatedAtAction(nameof(Get), new { uuid = problemFromScratch.Problem.Uuid }, problemFromScratch.Problem);
     }
 
     [HttpPost("clrs")]
@@ -103,15 +95,15 @@ public class ProblemController(ProblemService problemService, UsersService users
         return Ok();
     }
 
-    [HttpPatch("status/{id:length(24)}/{status}")]
-    public async Task<IActionResult> Patch(string id, ProblemStatus status)
+    [HttpPatch("status/{uuid}/{status}")]
+    public async Task<IActionResult> Patch(string uuid, ProblemStatus status)
     {
-        await problemService.SetStatus(id, status);
+        await problemService.SetStatus(uuid, status);
         return Ok();
     }
 
-    [HttpPatch("{id:length(24)}")]
-    public async Task<IActionResult> Patch(string id, [FromBody] ProblemUpdate update)
+    [HttpPatch("{uuid}")]
+    public async Task<IActionResult> Patch(string uuid, [FromBody] ProblemUpdate update)
     {
         var user = await usersService.GetAsync(update.UserId);
         if (user is null)
@@ -119,15 +111,11 @@ public class ProblemController(ProblemService problemService, UsersService users
             return NotFound();
         }
 
-        var result = await problemService.EditSolution(id, update.NewSolution, user.Username);
-        if (result is not null)
-        {
-            await pullRequestService.MoveToNewProblem(id, result);
-        }
+        await problemService.EditSolution(uuid, update.NewSolution, user.Username);
         return Ok();
     }
 
-    [HttpDelete("{id:length(24)}")]
-    public async Task Delete(string id) =>
-        await problemService.RemoveAsync(id);
+    [HttpDelete("{uuid}")]
+    public async Task Delete(string uuid) =>
+        await problemService.RemoveAsync(uuid);
 }

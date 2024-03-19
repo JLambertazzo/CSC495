@@ -13,7 +13,6 @@ public class Comment
     [BsonElement("replyTo")]
     public string? ReplyTo { get; set; }
     
-    [BsonRepresentation(BsonType.ObjectId)]
     [BsonElement("commentOn")]
     public string CommentOn { get; set; } = null!;
 
@@ -22,4 +21,6 @@ public class Comment
 
     [BsonElement("body")]
     public string Body { get; set; } = null!;
+
+    [BsonElement("numReplies")] public int NumReplies { get; set; } = 0;
 }

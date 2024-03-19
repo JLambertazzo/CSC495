@@ -22,7 +22,7 @@ export const ProblemCard = (props: { problem: Problem }) => {
       <Card sx={{ p: 3, width: '100%', height: 200 }}>
         <Stack direction={'row'} justifyContent={'space-between'}>
           <Link
-            to={props.problem.id}
+            to={props.problem.uuid}
             style={{ textDecoration: 'none', color: theme.palette.primary.main }}
           >
             <Typography variant="h6">{props.problem.title}</Typography>

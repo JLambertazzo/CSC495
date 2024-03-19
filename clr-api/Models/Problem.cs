@@ -2,6 +2,8 @@
 using System.Text.Json.Serialization;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using shortid;
+using shortid.Configuration;
 
 namespace clr_api.Models;
 
@@ -35,9 +37,8 @@ public class Problem
     [BsonRepresentation(BsonType.ObjectId)]
     public string? Id { get; set; }
 
-    [BsonRepresentation(BsonType.ObjectId)]
-    [BsonElement("source")]
-    public string? Source { get; set; }
+    [BsonElement("uuid")] 
+    public string Uuid { get; init; } = ShortId.Generate(new GenerationOptions(useSpecialCharacters: false, useNumbers: true));
 
     [BsonElement("status")]
     public ProblemStatus Status { get; set; } = ProblemStatus.Review;
