@@ -55,5 +55,11 @@ class ProblemService {
       .delete(`/Problem/${uuid}`)
       .then(() => navigate('..'))
       .catch((err) => err)
+
+  getSolutionAuthors = (problemId: string) =>
+    axios
+      .get(`/Problem/authors/${problemId}`)
+      .then((res) => res.data)
+      .catch((err) => err)
 }
 export const problemService = new ProblemService()
