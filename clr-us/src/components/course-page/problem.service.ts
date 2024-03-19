@@ -1,5 +1,3 @@
-import { NavigateFunction } from 'react-router-dom'
-
 import { ProblemType } from '@/enum'
 import { Problem, ProblemStatus, isProblem } from '@/types/problem'
 
@@ -38,27 +36,27 @@ class ProblemService {
       .then((res) => setLatest(res.data))
       .catch((err) => err)
 
-  approveProblem = (navigate: NavigateFunction, uuid: string) => () =>
+  approveProblem = (uuid: string) =>
     axios
       .patch(`/Problem/status/${uuid}/${ProblemStatus.Posted}`)
-      .then(() => navigate('..'))
+      .then((res) => res.data)
       .catch((err) => err)
 
-  endorseProblem = (navigate: NavigateFunction, uuid: string) => () =>
+  endorseProblem = (uuid: string) =>
     axios
       .patch(`/Problem/status/${uuid}/${ProblemStatus.Endorsed}`)
-      .then(() => navigate('..'))
+      .then((res) => res.data)
       .catch((err) => err)
 
-  deleteProblem = (navigate: NavigateFunction, uuid: string) => () =>
+  deleteProblem = (uuid: string) =>
     axios
       .delete(`/Problem/${uuid}`)
-      .then(() => navigate('..'))
+      .then((res) => res.data)
       .catch((err) => err)
 
-  getSolutionAuthors = (problemId: string) =>
+  getSolutionAuthors = (problemUuid: string) =>
     axios
-      .get(`/Problem/authors/${problemId}`)
+      .get(`/Problem/authors/${problemUuid}`)
       .then((res) => res.data)
       .catch((err) => err)
 }

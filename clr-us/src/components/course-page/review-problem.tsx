@@ -12,18 +12,21 @@ import {
 } from '@mui/material'
 import parse from 'html-react-parser'
 import React, { useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { ProblemType } from '@/enum'
 import { useInstructorCheck } from '@/hooks'
+import { useNotification } from '@/hooks/useNotification'
 import { Problem } from '@/types/problem'
-import { getAiReviewSpecs, getAiSeverity } from '@/util'
+import { getAiReviewSpecs, getAiSeverity, navigateUp } from '@/util'
 
 import { problemService } from './problem.service'
 
 export const ReviewProblem = (props: { problemType: ProblemType; problem?: Problem }) => {
   useInstructorCheck()
   const navigate = useNavigate()
+  const location = useLocation()
+  const notify = useNotification()
   const aiAlert = useMemo(
     () => (props.problem?.aiReview ? getAiSeverity(props.problem.aiReview.aiScore) : null),
     [props.problem?.aiReview]
@@ -32,6 +35,30 @@ export const ReviewProblem = (props: { problemType: ProblemType; problem?: Probl
     () => getAiReviewSpecs(props.problem?.aiReview?.aiScore ?? 0)?.text,
     [props.problem?.aiReview?.aiScore]
   )
+
+  const approve = () =>
+    problemService
+      .approveProblem(props.problem?.uuid ?? '')
+      .then(() => {
+        notify({
+          message: 'Success! Solution has been approved and is posted.',
+          severity: 'success',
+        })
+        navigate(navigateUp(location.pathname, 1))
+      })
+      .catch(() => console.log('An unknown error has occurred'))
+
+  const reject = () =>
+    problemService
+      .deleteProblem(props.problem?.uuid ?? '')
+      .then(() => {
+        notify({
+          message: 'Success! Solution has been deleted.',
+          severity: 'success',
+        })
+        navigate(navigateUp(location.pathname, 1))
+      })
+      .catch(() => console.log('An unknown error has occurred'))
 
   return (
     <Grid p={5} width={'70vw'}>
@@ -78,17 +105,10 @@ export const ReviewProblem = (props: { problemType: ProblemType; problem?: Probl
           </Alert>
         )}
         <Grid>
-          <Button
-            onClick={problemService.approveProblem(navigate, props.problem?.uuid ?? '')}
-            variant={'contained'}
-            sx={{ mr: 1 }}
-          >
+          <Button onClick={approve} variant={'contained'} sx={{ mr: 1 }}>
             Accept
           </Button>
-          <Button
-            onClick={problemService.deleteProblem(navigate, props.problem?.uuid ?? '')}
-            variant={'outlined'}
-          >
+          <Button onClick={reject} variant={'outlined'}>
             Delete
           </Button>
         </Grid>

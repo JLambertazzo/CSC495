@@ -6,7 +6,7 @@ import { Formik, Form, Field, FieldProps, ErrorMessage } from 'formik'
 import parse from 'html-react-parser'
 import React, { useCallback, useEffect, useState } from 'react'
 import 'react-quill/dist/quill.snow.css'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
 
 import { ProblemComments } from '@/components/course-page/comments'
@@ -16,6 +16,7 @@ import { useCourseCheck } from '@/hooks'
 import { useNotification } from '@/hooks/useNotification'
 import { IUser, PullRequest } from '@/types'
 import { Problem } from '@/types/problem'
+import { navigateUp } from '@/util'
 
 import { TextEditor } from '../text-editor/text-editor'
 
@@ -92,6 +93,8 @@ const SolutionEditor = (props: {
 export const PostedProblem = (props: { problemType: ProblemType; problem?: Problem }) => {
   useCourseCheck()
   const navigate = useNavigate()
+  const location = useLocation()
+  const notify = useNotification()
   const { user } = useAuth()
   const [editing, setEditing] = useState(false)
   const [prs, setPrs] = useState<PullRequest[] | null>(null)
@@ -103,6 +106,18 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
       problemService.getSolutionAuthors(props.problem.uuid).then((res) => setSolutionAuthors(res))
     }
   }, [props.problem])
+
+  const endorse = () =>
+    problemService
+      .endorseProblem(props.problem?.id ?? '')
+      .then(() => {
+        notify({
+          message: 'Success! Solution has been endorsed.',
+          severity: 'success',
+        })
+        navigate(navigateUp(location.pathname, 1))
+      })
+      .catch(() => console.log('An unknown error has occurred'))
 
   return (
     <Grid p={5} width={'70vw'}>
@@ -148,12 +163,10 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
             </CardActions>
           </Card>
         )}
+      </Grid>
+      <Grid>
         <Grid>
-          <Button
-            onClick={problemService.endorseProblem(navigate, props.problem?.uuid ?? '')}
-            variant={'contained'}
-            sx={{ mr: 1, mt: 2 }}
-          >
+          <Button onClick={endorse} variant={'contained'} sx={{ mr: 1, mt: 2 }}>
             Endorse
           </Button>
         </Grid>
