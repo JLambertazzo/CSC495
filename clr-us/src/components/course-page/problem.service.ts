@@ -26,33 +26,33 @@ class ProblemService {
       .catch((err) => err)
   }
 
-  getProblem = (id: string, setProblem: (problem: Problem) => void) =>
+  getProblem = (uuid: string, setProblem: (problem: Problem) => void) =>
     axios
-      .get(`/Problem/${id}`)
+      .get(`/Problem/${uuid}`)
       .then((res) => setProblem(res.data))
       .catch((err) => err)
 
-  getLatest = (id: string, setLatest: (problem: Problem) => void) =>
+  getLatest = (uuid: string, setLatest: (problem: Problem) => void) =>
     axios
-      .get(`/Problem/latest/${id}`)
+      .get(`/Problem/latest/${uuid}`)
       .then((res) => setLatest(res.data))
       .catch((err) => err)
 
-  approveProblem = (navigate: NavigateFunction, id: string) => () =>
+  approveProblem = (navigate: NavigateFunction, uuid: string) => () =>
     axios
-      .patch(`/Problem/status/${id}/${ProblemStatus.Posted}`)
+      .patch(`/Problem/status/${uuid}/${ProblemStatus.Posted}`)
       .then(() => navigate('..'))
       .catch((err) => err)
 
-  endorseProblem = (navigate: NavigateFunction, id: string) => () =>
+  endorseProblem = (navigate: NavigateFunction, uuid: string) => () =>
     axios
-      .patch(`/Problem/status/${id}/${ProblemStatus.Endorsed}`)
+      .patch(`/Problem/status/${uuid}/${ProblemStatus.Endorsed}`)
       .then(() => navigate('..'))
       .catch((err) => err)
 
-  deleteProblem = (navigate: NavigateFunction, id: string) => () =>
+  deleteProblem = (navigate: NavigateFunction, uuid: string) => () =>
     axios
-      .delete(`/Problem/${id}`)
+      .delete(`/Problem/${uuid}`)
       .then(() => navigate('..'))
       .catch((err) => err)
 

@@ -3,10 +3,10 @@ import { PullRequest, isPullRequest } from '@/types'
 import { axios } from '../services/axios'
 
 class PullRequestService {
-  postPullRequest = (problemId: string, body: string, author: string) => {
+  postPullRequest = (problemUuid: string, body: string, author: string) => {
     return axios
       .post('/PullRequest', {
-        problemId,
+        problemUuid,
         body,
         author,
       })
@@ -14,15 +14,15 @@ class PullRequestService {
       .catch((err) => err)
   }
 
-  getPullRequests = (problemId: string, setPrs: (prs: PullRequest[] | null) => void) =>
+  getPullRequests = (problemUuid: string, setPrs: (prs: PullRequest[] | null) => void) =>
     axios
-      .get(`/PullRequest/problem/${problemId}`)
+      .get(`/PullRequest/problem/${problemUuid}`)
       .then((res) => setPrs(res.data.filter(isPullRequest)))
       .catch((err) => err)
 
-  upvote = (problemId: string, username: string) =>
+  upvote = (prId: string, username: string) =>
     axios
-      .post(`/PullRequest/upvote?id=${problemId}&username=${username}`)
+      .post(`/PullRequest/upvote?id=${prId}&username=${username}`)
       .then()
       .catch((err) => err)
 

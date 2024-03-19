@@ -41,10 +41,10 @@ const SolutionEditor = (props: {
   const handleSubmit = useCallback(
     async (values: IPREdit) => {
       await pullRequestService
-        .postPullRequest(props.problem?.id ?? '', values.solution, values.author)
+        .postPullRequest(props.problem?.uuid ?? '', values.solution, values.author)
         .then(async () => {
           props.closeEditor()
-          await pullRequestService.getPullRequests(props.problem?.id ?? '', props.setPr)
+          await pullRequestService.getPullRequests(props.problem?.uuid ?? '', props.setPr)
           notify({
             message: 'Success! Your suggestion has been posted and is up for review.',
             severity: 'success',
@@ -99,8 +99,8 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
 
   useEffect(() => {
     if (props.problem) {
-      pullRequestService.getPullRequests(props.problem.id, setPrs)
-      problemService.getSolutionAuthors(props.problem.id).then((res) => setSolutionAuthors(res))
+      pullRequestService.getPullRequests(props.problem.uuid, setPrs)
+      problemService.getSolutionAuthors(props.problem.uuid).then((res) => setSolutionAuthors(res))
     }
   }, [props.problem])
 
@@ -150,7 +150,7 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
         )}
         <Grid>
           <Button
-            onClick={problemService.endorseProblem(navigate, props.problem?.id ?? '')}
+            onClick={problemService.endorseProblem(navigate, props.problem?.uuid ?? '')}
             variant={'contained'}
             sx={{ mr: 1, mt: 2 }}
           >
@@ -158,7 +158,7 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
           </Button>
         </Grid>
         <Grid container mt={2}>
-          <ProblemComments problemId={props.problem?.id ?? ''} />
+          <ProblemComments problemUuid={props.problem?.uuid ?? ''} />
         </Grid>
       </Grid>
     </Grid>

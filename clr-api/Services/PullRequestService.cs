@@ -24,15 +24,12 @@ public class PullRequestService
         _problemService = problemService;
         _usersService = usersService;
     }
-
-    public async Task<List<PullRequest>> GetAsync() =>
-        await _pullRequestCollection.Find(_ => true).ToListAsync();
     
     public async Task<PullRequest?> GetAsync(string id) =>
         await _pullRequestCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
     
-    public async Task<List<PullRequest>> GetByProblemAsync(string id) =>
-        await _pullRequestCollection.Find(x => x.ProblemId == id).ToListAsync();
+    public async Task<List<PullRequest>> GetByProblemAsync(string uuid) =>
+        await _pullRequestCollection.Find(x => x.ProblemUuid == uuid).ToListAsync();
 
     /**
      * Create a pull request if user is a student, make the edit immediately if instructor
@@ -41,15 +38,11 @@ public class PullRequestService
     public async Task<Boolean> CreateAsync(PullRequest newPullRequest)
     {
         var author = await _usersService.GetByUsername(newPullRequest.Author);
-        var problem = await _problemService.GetLatest(newPullRequest.ProblemId ?? "");
+        var problem = await _problemService.GetLatest(newPullRequest.ProblemUuid ?? "");
         if (author is not null && problem is not null &&
             _usersService.RoleInClass(author, problem.Class) == UserRole.Instructor)
         {
-            var result = await _problemService.EditSolution(problem.Id ?? "", newPullRequest.Body, newPullRequest.Author);
-            if (result is not null)
-            {
-                await MoveToNewProblem(problem.Id ?? "", result);
-            }
+            await _problemService.EditSolution(problem.Uuid, newPullRequest.Body, newPullRequest.Author);
             return false;
         }
         await _pullRequestCollection.InsertOneAsync(newPullRequest);
@@ -73,7 +66,7 @@ public class PullRequestService
         {
             Body = pullRequest.Body,
             Id = pullRequest.Id,
-            ProblemId = pullRequest.ProblemId,
+            ProblemUuid = pullRequest.ProblemUuid,
             Author = pullRequest.Author,
             Upvoters = pullRequest.Upvoters
         };
@@ -91,8 +84,8 @@ public class PullRequestService
 
     public async Task MoveToNewProblem(string oldProblemId, string newProblemId)
     {
-        var filter = Builders<PullRequest>.Filter.Eq(x => x.ProblemId, oldProblemId);
-        var updateProblemId = Builders<PullRequest>.Update.Set(x => x.ProblemId, newProblemId);
+        var filter = Builders<PullRequest>.Filter.Eq(x => x.ProblemUuid, oldProblemId);
+        var updateProblemId = Builders<PullRequest>.Update.Set(x => x.ProblemUuid, newProblemId);
         var updateUpvoters = Builders<PullRequest>.Update.Set(x => x.Upvoters, new());
         var update = Builders<PullRequest>.Update.Combine(updateProblemId, updateUpvoters);
             
@@ -102,15 +95,8 @@ public class PullRequestService
     public async Task MergeAsync(PullRequest pullRequest)
     {
         // Update Problem with the PR's solution
-        var result = await _problemService.EditSolution(pullRequest.ProblemId, pullRequest.Body, pullRequest.Author);
-
-        if (result is not null)
-        {
-            await MoveToNewProblem(pullRequest.ProblemId, result);
-        }
-        
-        // Delete the PR
-        await RemoveAsync(pullRequest.Id);
+        await _problemService.EditSolution(pullRequest.ProblemUuid, pullRequest.Body, pullRequest.Author);
+        await RemoveAsync(pullRequest.Id ?? "");
     }
 
     public async Task UpdateBodyAsync(PullRequest pullRequest, string newBody)
@@ -120,11 +106,11 @@ public class PullRequestService
             Body = newBody,
             Author = pullRequest.Author,
             Id = pullRequest.Id,
-            ProblemId = pullRequest.ProblemId,
+            ProblemUuid = pullRequest.ProblemUuid,
             // We reset upvoters when the author updates the solution
             Upvoters = new()
         };
-        await UpdateAsync(pullRequest.Id, updatedPullRequest);
+        await UpdateAsync(pullRequest.Id ?? "", updatedPullRequest);
     }
 }
     

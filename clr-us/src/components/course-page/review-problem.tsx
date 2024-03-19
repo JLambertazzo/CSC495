@@ -79,14 +79,14 @@ export const ReviewProblem = (props: { problemType: ProblemType; problem?: Probl
         )}
         <Grid>
           <Button
-            onClick={problemService.approveProblem(navigate, props.problem?.id ?? '')}
+            onClick={problemService.approveProblem(navigate, props.problem?.uuid ?? '')}
             variant={'contained'}
             sx={{ mr: 1 }}
           >
             Accept
           </Button>
           <Button
-            onClick={problemService.deleteProblem(navigate, props.problem?.id ?? '')}
+            onClick={problemService.deleteProblem(navigate, props.problem?.uuid ?? '')}
             variant={'outlined'}
           >
             Delete
