@@ -2,7 +2,7 @@ export const isProblem = (problem: unknown): problem is Problem => {
   if (!problem || typeof problem !== 'object') {
     return false
   }
-  const requiredKeys = ['id', 'status', 'title', 'body', 'solution', 'type', 'author']
+  const requiredKeys = ['id', 'status', 'title', 'body', 'solution', 'type', 'author', 'uuid']
   if (requiredKeys.some((key) => !Object.hasOwn(problem, key))) {
     return false
   }
@@ -17,6 +17,7 @@ export enum ProblemStatus {
 
 export type Problem = {
   id: string
+  uuid: string
   status: ProblemStatus
   title: string
   body: string

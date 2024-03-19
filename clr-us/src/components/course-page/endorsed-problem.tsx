@@ -37,7 +37,7 @@ const SolutionEditor = (props: {
   const handleSubmit = useCallback(
     async (values: IPREdit) => {
       await pullRequestService
-        .postPullRequest(props.problem?.id ?? '', values.solution, values.author)
+        .postPullRequest(props.problem?.uuid ?? '', values.solution, values.author)
         .then(async () => {
           props.closeEditor()
           props.forceRefresh()
@@ -137,7 +137,7 @@ export const EndorsedProblem = (props: {
       {role === UserRoles.Instructor && (
         <Grid>
           <Button
-            onClick={problemService.endorseProblem(navigate, props.problem?.id ?? '')}
+            onClick={problemService.endorseProblem(navigate, props.problem?.uuid ?? '')}
             variant={'outlined'}
             sx={{ mr: 1, mt: 2 }}
             color="error"

@@ -4,7 +4,7 @@ import 'react-quill/dist/quill.snow.css'
 
 import { Sidebar } from '@/components/navbar'
 import { ProblemStatus } from '@/enum'
-import { useGetProblemId, useGetProblemType } from '@/hooks'
+import { useGetProblemUuid, useGetProblemType } from '@/hooks'
 import { Problem } from '@/types/problem'
 
 import { EndorsedProblem } from './endorsed-problem'
@@ -14,15 +14,15 @@ import { ReviewProblem } from './review-problem'
 
 export const ViewProblem: React.FC = () => {
   const problemType = useGetProblemType()
-  const problemId = useGetProblemId()
+  const problemUuid = useGetProblemUuid()
   const [problem, setProblem] = useState<Problem | undefined>(undefined)
   const [status, setStatus] = useState<ProblemStatus>(ProblemStatus.Posted)
 
-  const forceRefresh = () => problemService.getProblem(problemId, setProblem)
+  const forceRefresh = () => problemService.getProblem(problemUuid, setProblem)
 
   useEffect(() => {
-    problemService.getProblem(problemId, setProblem)
-  }, [problemId, setProblem])
+    problemService.getProblem(problemUuid, setProblem)
+  }, [problemUuid, setProblem])
 
   useEffect(() => {
     if (!problem) {

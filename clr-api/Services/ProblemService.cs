@@ -1,6 +1,8 @@
 ﻿using clr_api.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using shortid;
+using shortid.Configuration;
 
 namespace clr_api.Services;
 
@@ -22,6 +24,12 @@ public class ProblemService
             clrApiDatabaseSettings.Value.ProblemCollectionName);
 
         _clrsService = clrsService;
+    }
+
+    private String GetShortId()
+    {
+        var options = new GenerationOptions(useSpecialCharacters: false, useNumbers: true);
+        return ShortId.Generate(options);
     }
 
     public async Task CreateAsync(Problem newProblem, string username, string offeringId)
@@ -54,19 +62,16 @@ public class ProblemService
         await _problemCollection.InsertOneAsync(newProblem);
     }
 
-    public async Task<string?> EditSolution(string problemId, string newSolution, string username)
+    public async Task EditSolution(string problemUuid, string newSolution, string username)
     {
-        var problem = await _problemCollection.Find(x => (x.Id == problemId || x.Source == problemId) && x.Latest).FirstOrDefaultAsync();
+        var problem = await _problemCollection.Find(x => x.Uuid == problemUuid && x.Latest).FirstOrDefaultAsync();
         if (problem is null)
         {
-            return null;
+            return;
         }
-
-        var source = problem.Source ?? problem.Id;
 
         var newProblem = new Problem
         {
-            Source = source,
             Author = username,
             Solution = newSolution,
             Body = problem.Body,
@@ -75,7 +80,8 @@ public class ProblemService
             Title = problem.Title,
             Class = problem.Class,
             Latest = true,
-            Type = problem.Type
+            Type = problem.Type,
+            Uuid = problem.Uuid
         };
         await _problemCollection.InsertOneAsync(newProblem);
         
@@ -83,58 +89,39 @@ public class ProblemService
         var filter = Builders<Problem>.Filter.Eq(x => x.Id, problem.Id);
         var update = Builders<Problem>.Update.Set(x => x.Latest, false);
         await _problemCollection.UpdateOneAsync(filter, update);
-
-        return newProblem.Id;
     }
 
-    public async Task SetStatus(string problemId, ProblemStatus status)
+    public async Task SetStatus(string uuid, ProblemStatus status)
     {
-        var filter = Builders<Problem>.Filter.Eq(x => x.Id, problemId);
         var update = Builders<Problem>.Update.Set(x => x.Status, status);
-        await _problemCollection.FindOneAndUpdateAsync(filter, update);
+        await _problemCollection.FindOneAndUpdateAsync(x => x.Latest && x.Uuid == uuid, update);
     }
 
     public async Task<List<Problem>> GetByClassAsync(string offeringId, ProblemStatus? status) =>
         await _problemCollection.Find(x => x.Class == offeringId && x.Latest && (!status.HasValue || (x.Status == status))).ToListAsync();
 
-    public async Task<Problem?> GetAsync(string problemId) =>
-        await _problemCollection.Find(x => (x.Id == problemId || x.Source == problemId) && x.Latest).FirstOrDefaultAsync();
+    public async Task<Problem?> GetAsync(string uuid) =>
+        await _problemCollection.Find(x => x.Uuid == uuid && x.Latest).FirstOrDefaultAsync();
 
-    public async Task<List<Problem>> GetBySourceAsync(string source) =>
-        await _problemCollection.Find(x => x.Source == source || x.Id == source).ToListAsync();
-
-    public async Task RemoveAsync(string id) =>
-        await _problemCollection.DeleteOneAsync(x => x.Id == id);
-
-    public async Task<Problem?> GetLatest(string id)
+    public async Task<List<Problem>?> GetByUuid(string uuid)
     {
-        var current = await _problemCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
-        if (current.Latest)
+        var versions = await _problemCollection.Find(x => x.Uuid == uuid).ToListAsync();
+        if (versions is not null)
         {
-            return current;
+            versions.Sort((x,y) => x.Version - y.Version);
         }
-        var match = current.Source ?? current.Id;
-        return await _problemCollection.Find(x => x.Source == match && x.Latest).FirstOrDefaultAsync();
+        return versions;
     }
 
-    public async Task<List<String>?> GetAuthors(string id)
+    public async Task RemoveAsync(string uuid) =>
+        await _problemCollection.DeleteManyAsync(x => x.Uuid == uuid);
+
+    public async Task<Problem?> GetLatest(string uuid) =>
+        await _problemCollection.Find(x => x.Uuid == uuid && x.Latest).FirstOrDefaultAsync();
+
+    public async Task<List<String>?> GetAuthors(string uuid)
     {
-        var target = await GetLatest(id);
-        if (target is null)
-        {
-            return null;
-        }
-
-        List<Problem> allVersions;
-        if (target.Source is null)
-        {
-            allVersions = new List<Problem>(){target};
-        }
-        else
-        {
-            allVersions = await _problemCollection.Find(x => x.Id == target.Source || x.Source == target.Source).ToListAsync();
-        }
-
+        var allVersions = await GetByUuid(uuid);
         return allVersions.Select(x => x.Author).Distinct().ToList();
     }
 

@@ -38,10 +38,10 @@ const SolutionEditor = (props: {
   const handleSubmit = useCallback(
     async (values: IPREdit) => {
       await pullRequestService
-        .postPullRequest(props.problem?.id ?? '', values.solution, values.author)
+        .postPullRequest(props.problem?.uuid ?? '', values.solution, values.author)
         .then(async () => {
           props.closeEditor()
-          await pullRequestService.getPullRequests(props.problem?.id ?? '', props.setPr)
+          await pullRequestService.getPullRequests(props.problem?.uuid ?? '', props.setPr)
           notify({
             message: 'Success! Your suggestion has been posted and is up for review.',
             severity: 'success',
@@ -95,7 +95,7 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
 
   useEffect(() => {
     if (props.problem) {
-      pullRequestService.getPullRequests(props.problem.id, setPrs)
+      pullRequestService.getPullRequests(props.problem.uuid, setPrs)
     }
   }, [props.problem])
 
@@ -138,7 +138,7 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
       </Grid>
       <Grid>
         <Button
-          onClick={problemService.endorseProblem(navigate, props.problem?.id ?? '')}
+          onClick={problemService.endorseProblem(navigate, props.problem?.uuid ?? '')}
           variant={'contained'}
           sx={{ mr: 1, mt: 2 }}
         >

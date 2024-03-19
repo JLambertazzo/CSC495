@@ -43,7 +43,7 @@ function App() {
                   />
                   <Route
                     key={value}
-                    path={`/:id/${RouteList.Learn}/${value}/:problemId`}
+                    path={`/:id/${RouteList.Learn}/${value}/:problemUuid`}
                     element={<ViewProblem />}
                   />
                 </>

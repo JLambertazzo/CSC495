@@ -8,10 +8,9 @@ public class PullRequest
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string? Id { get; set; }
-    
-    [BsonRepresentation(BsonType.ObjectId)]
+
     [BsonElement("problemId")]
-    public string? ProblemId { get; set; }
+    public string ProblemUuid { get; set; }
 
     [BsonElement("upvoters")]
     public List<string> Upvoters { get; set; } = new();
