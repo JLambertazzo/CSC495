@@ -14,13 +14,10 @@ import {
 } from '@mui/material'
 import parse from 'html-react-parser'
 import React, { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 import useAuth from '@/context/context'
 import { PullRequest } from '@/types'
-import { Problem } from '@/types/problem'
 
-import { problemService } from './problem.service'
 import { pullRequestService } from './pullrequest.service'
 
 const PrCard = (props: {
@@ -28,8 +25,8 @@ const PrCard = (props: {
   byUser?: boolean
   close: VoidFunction
   setPr: React.Dispatch<React.SetStateAction<PullRequest[] | null>>
+  forceRefresh: VoidFunction
 }) => {
-  const navigate = useNavigate()
   const { user } = useAuth()
   const username = useMemo(() => user?.username ?? '', [user?.username])
 
@@ -49,13 +46,13 @@ const PrCard = (props: {
       .then(() => pullRequestService.getPullRequests(props.pr.problemUuid, props.setPr))
   }
   const handleMerge = () => {
-    const goToNewProblem = (problem: Problem) => {
-      navigate(`./../${problem.uuid}`)
-      props.close()
-    }
     pullRequestService
       .merge(props.pr.id)
-      .then(() => problemService.getLatest(props.pr.problemUuid, goToNewProblem))
+      .then(() => pullRequestService.getPullRequests(props.pr.problemUuid, props.setPr))
+      .then(() => {
+        props.forceRefresh()
+        props.close()
+      })
   }
 
   return (
@@ -108,6 +105,7 @@ const style = {
 export const PrModal = (props: {
   prs: PullRequest[]
   setPr: React.Dispatch<React.SetStateAction<PullRequest[] | null>>
+  forceRefresh: VoidFunction
 }) => {
   const [open, setOpen] = useState(false)
   const { user } = useAuth()
@@ -134,6 +132,7 @@ export const PrModal = (props: {
               key={pr.id}
               byUser={pr.author === user?.username}
               close={() => setOpen(false)}
+              forceRefresh={props.forceRefresh}
               setPr={props.setPr}
             />
           ))}

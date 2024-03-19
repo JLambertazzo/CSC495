@@ -12,9 +12,9 @@ import * as Yup from 'yup'
 import { ProblemComments } from '@/components/course-page/comments'
 import useAuth from '@/context/context'
 import { ProblemType } from '@/enum'
-import { useCourseCheck } from '@/hooks'
+import { useCourseCheck, useUserRole } from '@/hooks'
 import { useNotification } from '@/hooks/useNotification'
-import { IUser, PullRequest } from '@/types'
+import { IUser, PullRequest, UserRoles } from '@/types'
 import { Problem } from '@/types/problem'
 import { navigateUp } from '@/util'
 
@@ -29,6 +29,7 @@ const SolutionEditor = (props: {
   problem?: Problem
   user: IUser | null
   closeEditor: VoidFunction
+  forceRefresh: VoidFunction
   setPr: React.Dispatch<React.SetStateAction<PullRequest[] | null>>
 }) => {
   const notify = useNotification()
@@ -46,6 +47,7 @@ const SolutionEditor = (props: {
         .then(async () => {
           props.closeEditor()
           await pullRequestService.getPullRequests(props.problem?.uuid ?? '', props.setPr)
+          props.forceRefresh()
           notify({
             message: 'Success! Your suggestion has been posted and is up for review.',
             severity: 'success',
@@ -90,7 +92,11 @@ const SolutionEditor = (props: {
   )
 }
 
-export const PostedProblem = (props: { problemType: ProblemType; problem?: Problem }) => {
+export const PostedProblem = (props: {
+  problemType: ProblemType
+  problem?: Problem
+  forceRefresh: VoidFunction
+}) => {
   useCourseCheck()
   const navigate = useNavigate()
   const location = useLocation()
@@ -99,6 +105,7 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
   const [editing, setEditing] = useState(false)
   const [prs, setPrs] = useState<PullRequest[] | null>(null)
   const [solutionAuthors, setSolutionAuthors] = useState([])
+  const role = useUserRole()
 
   useEffect(() => {
     if (props.problem) {
@@ -135,7 +142,7 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
       </Grid>
       <Grid container direction={'column'} gap={2} width={'100%'} mt={5}>
         <Typography variant={'h5'}>Solution</Typography>
-        {prs && <PrModal prs={prs} setPr={setPrs} />}
+        {prs && <PrModal prs={prs} setPr={setPrs} forceRefresh={props.forceRefresh} />}
         <Chip
           sx={{ background: '#e7f2ff', color: '#022D6D', alignSelf: 'flex-start' }}
           icon={<LightbulbIcon style={{ color: '#022D6D' }} />}
@@ -146,6 +153,7 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
             problem={props.problem}
             user={user}
             closeEditor={() => setEditing(false)}
+            forceRefresh={props.forceRefresh}
             setPr={setPrs}
           />
         ) : (
@@ -165,11 +173,13 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
         )}
       </Grid>
       <Grid>
-        <Grid>
-          <Button onClick={endorse} variant={'contained'} sx={{ mr: 1, mt: 2 }}>
-            Endorse
-          </Button>
-        </Grid>
+        {role === UserRoles.Instructor && (
+          <Grid>
+            <Button onClick={endorse} variant={'contained'} sx={{ mr: 1, mt: 2 }}>
+              Endorse
+            </Button>
+          </Grid>
+        )}
         <Grid container mt={2}>
           <ProblemComments problemUuid={props.problem?.uuid ?? ''} />
         </Grid>
