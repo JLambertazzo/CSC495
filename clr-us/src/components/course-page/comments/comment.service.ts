@@ -3,15 +3,15 @@ import { axios } from '@/components/services/axios'
 import { IPostComment, Comment } from './type'
 
 class CommentService {
-  getComments = (problemId: string) =>
+  getComments = (problemUuid: string) =>
     axios
-      .get(`/Comment/${problemId}`)
+      .get(`/Comment/${problemUuid}`)
       .then((res) => res.data.filter((el: Comment) => !el.replyTo))
       .catch((err) => err)
 
-  getReplies = (commentId: string) =>
+  getReplies = (commentUuid: string) =>
     axios
-      .get(`/Comment/${commentId}/replies`)
+      .get(`/Comment/${commentUuid}/replies`)
       .then((res) => res.data)
       .catch((err) => err)
 
@@ -21,9 +21,9 @@ class CommentService {
       .then()
       .catch((err) => err)
 
-  deleteComment = (commentId: string) =>
+  deleteComment = (commentUuid: string) =>
     axios
-      .delete(`/Comment/${commentId}`)
+      .delete(`/Comment/${commentUuid}`)
       .then()
       .catch((err) => err)
 }

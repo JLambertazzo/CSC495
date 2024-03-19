@@ -80,7 +80,7 @@ export const RepliesAccordion: React.FC<{
                 <CommentCard
                   {...comment}
                   handleDelete={handleDeleteComment}
-                  problemId={comment.commentOn}
+                  problemUuid={comment.commentOn}
                   fetchComments={fetchReplies}
                 />
                 {index < replies.length - 1 && <Divider />}

@@ -158,7 +158,7 @@ export const PostedProblem = (props: { problemType: ProblemType; problem?: Probl
           </Button>
         </Grid>
         <Grid container mt={2}>
-          <ProblemComments problemId={props.problem?.id ?? ''} />
+          <ProblemComments problemUuid={props.problem?.uuid ?? ''} />
         </Grid>
       </Grid>
     </Grid>

@@ -13,7 +13,6 @@ public class Comment
     [BsonElement("replyTo")]
     public string? ReplyTo { get; set; }
     
-    [BsonRepresentation(BsonType.ObjectId)]
     [BsonElement("commentOn")]
     public string CommentOn { get; set; } = null!;
 

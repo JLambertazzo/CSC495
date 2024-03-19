@@ -53,10 +53,10 @@ export const CommentCard: React.FC<{
   body: string
   id: string
   numReplies: number
-  problemId: string
+  problemUuid: string
   handleDelete: (commentId: string) => Promise<void>
   fetchComments: () => Promise<void>
-}> = ({ author, body, id, handleDelete, numReplies, problemId, fetchComments }) => {
+}> = ({ author, body, id, handleDelete, numReplies, problemUuid, fetchComments }) => {
   const { user } = useAuth()
   const courseID = useCurrentCourse()
 
@@ -87,7 +87,11 @@ export const CommentCard: React.FC<{
           <Typography fontWeight={600}>{author}</Typography>
           <Typography>{parse(body)}</Typography>
 
-          <ReplyButton originalCommentId={id} problemId={problemId} fetchComments={fetchComments} />
+          <ReplyButton
+            originalCommentId={id}
+            problemUuid={problemUuid}
+            fetchComments={fetchComments}
+          />
           {numReplies > 0 && (
             <RepliesAccordion
               numReplies={numReplies}

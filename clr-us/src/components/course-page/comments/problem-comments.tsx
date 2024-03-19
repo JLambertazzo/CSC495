@@ -12,7 +12,7 @@ import { useNotification } from '@/hooks/useNotification'
 
 import { Comment, IPostComment } from './type'
 
-export const ProblemComments = (props: { problemId: string }) => {
+export const ProblemComments = (props: { problemUuid: string }) => {
   const [comments, setComments] = useState<Comment[]>([])
   const [isEditing, setIsEditing] = useState(false)
 
@@ -23,19 +23,22 @@ export const ProblemComments = (props: { problemId: string }) => {
     author: user?.username || '',
     body: '',
     replyTo: null,
-    commentOn: props.problemId,
+    commentOn: props.problemUuid,
   } as IPostComment)
 
   const fetchComments = useCallback(
-    () => commentService.getComments(props.problemId).then((res) => setComments(res)),
-    [props.problemId]
+    () =>
+      commentService.getComments(props.problemUuid).then((res) => {
+        setComments(res)
+      }),
+    [props.problemUuid]
   )
 
   useEffect(() => {
-    if (props.problemId) {
+    if (props.problemUuid) {
       fetchComments().then()
     }
-  }, [fetchComments, props.problemId])
+  }, [fetchComments, props.problemUuid])
 
   const handleDeleteComment = useCallback(
     async (commentId: string) => {
@@ -56,7 +59,7 @@ export const ProblemComments = (props: { problemId: string }) => {
       await commentService
         .postComment({
           ...values,
-          commentOn: props.problemId,
+          commentOn: props.problemUuid,
           numReplies: 0,
         })
         .then(() => {
@@ -66,7 +69,7 @@ export const ProblemComments = (props: { problemId: string }) => {
           fetchComments().then()
         })
     },
-    [fetchComments, props.problemId]
+    [fetchComments, props.problemUuid]
   )
 
   const validationSchema = Yup.object().shape({
@@ -135,7 +138,7 @@ export const ProblemComments = (props: { problemId: string }) => {
               <CommentCard
                 {...comment}
                 handleDelete={handleDeleteComment}
-                problemId={comment.commentOn}
+                problemUuid={comment.commentOn}
                 fetchComments={fetchComments}
               />
               {index < comments.length - 1 && <Divider />}

@@ -9,7 +9,7 @@ public class PullRequest
     [BsonRepresentation(BsonType.ObjectId)]
     public string? Id { get; set; }
 
-    [BsonElement("problemId")]
+    [BsonElement("problemUuid")]
     public string ProblemUuid { get; set; }
 
     [BsonElement("upvoters")]

@@ -11,9 +11,9 @@ import { IPostComment } from './type'
 
 export const ReplyButton: React.FC<{
   originalCommentId: string
-  problemId: string
+  problemUuid: string
   fetchComments: () => Promise<void>
-}> = ({ originalCommentId, problemId, fetchComments }) => {
+}> = ({ originalCommentId, problemUuid, fetchComments }) => {
   const [isReplying, setIsReplying] = useState(false)
 
   const { user } = useAuth()
@@ -22,7 +22,7 @@ export const ReplyButton: React.FC<{
     author: user?.username || '',
     body: '',
     replyTo: originalCommentId,
-    commentOn: problemId,
+    commentOn: problemUuid,
   } as IPostComment)
 
   const validationSchema = Yup.object().shape({

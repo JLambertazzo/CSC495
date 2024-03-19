@@ -18,9 +18,9 @@ public class CommentController(CommentService commentService, UsersService users
         public string newBody { get; set; }
     }
     
-    [HttpGet("{id:length(24)}")]
-    public async Task<List<Comment>> Get(string id) =>
-        await commentService.GetCommentsOnAsync(id);
+    [HttpGet("{uuid}")]
+    public async Task<List<Comment>> Get(string uuid) =>
+        await commentService.GetCommentsOnAsync(uuid);
     
     [HttpGet("{id:length(24)}/replies")]
     public async Task<List<Comment>> GetReplies(string id) =>

@@ -15,9 +15,9 @@ public class PullRequestController(PullRequestService pullRequestService, UsersS
         return pullRequest == null ? NotFound() : pullRequest;
     }
 
-    [HttpGet("problem/{problemId:length(24)}")]
-    public async Task<ActionResult<List<PullRequest>>> GetByProblem(string problemId) =>
-        await pullRequestService.GetByProblemAsync(problemId);
+    [HttpGet("problem/{problemUuid}")]
+    public async Task<ActionResult<List<PullRequest>>> GetByProblem(string problemUuid) =>
+        await pullRequestService.GetByProblemAsync(problemUuid);
     
     [HttpPost]
     public async Task<ActionResult<PullRequest>> Post(PullRequest newPullRequest)
