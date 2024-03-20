@@ -1,7 +1,10 @@
 import Axios from 'axios'
 
 export const axios = Axios.create({
-  baseURL: process.env.URL || 'http://localhost:5277/api/',
+  baseURL:
+    process.env.NODE_ENV === 'production'
+      ? 'https://clrus.azurewebsites.net/'
+      : 'http://localhost:5277/api/',
   headers: {
     'Content-type': 'application/json',
   },
