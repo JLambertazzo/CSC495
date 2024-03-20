@@ -3,6 +3,9 @@
 
 name: Build and deploy ASP.Net Core app to Azure Web App - CLRUS
 
+env:
+  CLRAPIDATABASE__CONNECTIONSTRING: ${{ secrets.CONNECTIONSTRING }}
+  APIKEYS__HFTOKEN: ${{ secrets.HFTOKEN }}
 on:
   push:
     branches:
