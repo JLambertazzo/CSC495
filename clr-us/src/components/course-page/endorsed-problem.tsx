@@ -16,6 +16,7 @@ import { Problem } from '@/types/problem'
 import { TextEditor } from '../text-editor/text-editor'
 
 import { ProblemAuthorChip, SolutionAuthorsChip } from './authors'
+import { ProblemComments } from './comments'
 import { problemService } from './problem.service'
 import { pullRequestService } from './pullrequest.service'
 import { IPREdit } from './type'
@@ -141,6 +142,9 @@ export const EndorsedProblem = (props: {
             )}
           </Card>
         )}
+      </Grid>
+      <Grid container mt={2}>
+        <ProblemComments problemUuid={props.problem?.uuid ?? ''} />
       </Grid>
     </Grid>
   )
