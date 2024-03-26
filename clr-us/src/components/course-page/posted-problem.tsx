@@ -115,7 +115,7 @@ export const PostedProblem = (props: {
 
   const endorse = () =>
     problemService
-      .endorseProblem(props.problem?.id ?? '')
+      .endorseProblem(props.problem?.uuid ?? '')
       .then(() => {
         notify({
           message: 'Success! Solution has been endorsed.',
