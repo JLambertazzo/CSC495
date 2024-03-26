@@ -2,7 +2,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import { Button, Card, CardActions, CardContent, Grid, Typography } from '@mui/material'
 import { Formik, Form, Field, FieldProps, ErrorMessage } from 'formik'
 import parse from 'html-react-parser'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import 'react-quill/dist/quill.snow.css'
 import * as Yup from 'yup'
 
@@ -15,6 +15,8 @@ import { Problem } from '@/types/problem'
 
 import { TextEditor } from '../text-editor/text-editor'
 
+import { ProblemAuthorChip, SolutionAuthorsChip } from './authors'
+import { problemService } from './problem.service'
 import { pullRequestService } from './pullrequest.service'
 import { IPREdit } from './type'
 
@@ -92,6 +94,13 @@ export const EndorsedProblem = (props: {
   const { user } = useAuth()
   const [editing, setEditing] = useState(false)
   const role = useUserRole()
+  const [solutionAuthors, setSolutionAuthors] = useState([])
+
+  useEffect(() => {
+    if (props.problem) {
+      problemService.getSolutionAuthors(props.problem.uuid).then((res) => setSolutionAuthors(res))
+    }
+  }, [props.problem])
 
   return (
     <Grid p={5} width={'70vw'}>
@@ -101,11 +110,13 @@ export const EndorsedProblem = (props: {
       <Grid container py={3} direction={'column'} gap={2} width={'100%'}>
         <Typography variant={'h5'}>Problem</Typography>
         <Typography variant="h6">{props.problem?.title}</Typography>
+        <ProblemAuthorChip solutionAuthors={solutionAuthors} />
         <Card sx={{ p: 2 }}>{parse(props.problem?.body ?? '')}</Card>
       </Grid>
       <Grid container direction={'column'} gap={2} width={'100%'} mt={5}>
         <Typography variant={'h5'}>Solution</Typography>
         <Typography color={'#B0B0B0'}>The instructor endorsed the following solution.</Typography>
+        <SolutionAuthorsChip solutionAuthors={solutionAuthors} />
         {role === UserRoles.Instructor && editing ? (
           <SolutionEditor
             problem={props.problem}

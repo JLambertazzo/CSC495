@@ -119,10 +119,13 @@ public class ProblemService
     public async Task<Problem?> GetLatest(string uuid) =>
         await _problemCollection.Find(x => x.Uuid == uuid && x.Latest).FirstOrDefaultAsync();
 
+    /**
+     * WARNING: List sorted by version number - increasing order. Breaking this breaks frontend behaviour
+     */
     public async Task<List<String>?> GetAuthors(string uuid)
     {
         var allVersions = await GetByUuid(uuid);
-        return allVersions.Select(x => x.Author).Distinct().ToList();
+        return allVersions?.OrderBy(x => x.Version).Select(x => x.Author).Distinct().ToList();
     }
 
 }

@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material'
 import parse from 'html-react-parser'
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { ProblemType } from '@/enum'
@@ -20,6 +20,7 @@ import { useNotification } from '@/hooks/useNotification'
 import { Problem } from '@/types/problem'
 import { getAiReviewSpecs, getAiSeverity, navigateUp } from '@/util'
 
+import { ProblemAuthorChip, SolutionAuthorsChip } from './authors'
 import { problemService } from './problem.service'
 
 export const ReviewProblem = (props: { problemType: ProblemType; problem?: Problem }) => {
@@ -35,6 +36,13 @@ export const ReviewProblem = (props: { problemType: ProblemType; problem?: Probl
     () => getAiReviewSpecs(props.problem?.aiReview?.aiScore ?? 0)?.text,
     [props.problem?.aiReview?.aiScore]
   )
+  const [solutionAuthors, setSolutionAuthors] = useState([])
+
+  useEffect(() => {
+    if (props.problem) {
+      problemService.getSolutionAuthors(props.problem.uuid).then((res) => setSolutionAuthors(res))
+    }
+  }, [props.problem])
 
   const approve = () =>
     problemService
@@ -68,11 +76,13 @@ export const ReviewProblem = (props: { problemType: ProblemType; problem?: Probl
       <Grid container py={3} direction={'column'} gap={2} width={'100%'}>
         <Typography variant={'h5'}>Problem</Typography>
         <Typography variant="h6">{props.problem?.title}</Typography>
+        <ProblemAuthorChip solutionAuthors={solutionAuthors} />
         <Card sx={{ p: 2 }}>{parse(props.problem?.body ?? '')}</Card>
       </Grid>
       <Grid container direction={'column'} gap={2} width={'100%'} mt={5}>
         <Typography variant={'h5'}>Solution</Typography>
         <Typography color={'#B0B0B0'}>The student submitted the following solution.</Typography>
+        <SolutionAuthorsChip solutionAuthors={solutionAuthors} />
         <Card sx={{ p: 2 }}>{parse(props.problem?.solution ?? '')}</Card>
       </Grid>
       <Grid container direction="column" sx={{ mt: 7 }} gap={2}>

@@ -1,7 +1,5 @@
-import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import EditIcon from '@mui/icons-material/Edit'
-import LightbulbIcon from '@mui/icons-material/Lightbulb'
-import { Button, Card, CardActions, CardContent, Chip, Grid, Typography } from '@mui/material'
+import { Button, Card, CardActions, CardContent, Grid, Typography } from '@mui/material'
 import { Formik, Form, Field, FieldProps, ErrorMessage } from 'formik'
 import parse from 'html-react-parser'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -20,6 +18,7 @@ import { navigateUp } from '@/util'
 
 import { TextEditor } from '../text-editor/text-editor'
 
+import { ProblemAuthorChip, SolutionAuthorsChip } from './authors'
 import { PrModal } from './pr-modal'
 import { problemService } from './problem.service'
 import { pullRequestService } from './pullrequest.service'
@@ -133,21 +132,13 @@ export const PostedProblem = (props: {
       </Typography>
       <Grid container py={3} direction={'column'} gap={2} width={'100%'}>
         <Typography variant="h6">{props.problem?.title}</Typography>
-        <Chip
-          sx={{ background: '#e7f2ff', color: '#022D6D', alignSelf: 'flex-start' }}
-          icon={<AccountCircleIcon style={{ color: '#022D6D' }} />}
-          label={props.problem?.author ?? ''}
-        />
+        <ProblemAuthorChip solutionAuthors={solutionAuthors} />
         <Card sx={{ p: 2 }}>{parse(props.problem?.body ?? '')}</Card>
       </Grid>
       <Grid container direction={'column'} gap={2} width={'100%'} mt={5}>
         <Typography variant={'h5'}>Solution</Typography>
         {prs && <PrModal prs={prs} setPr={setPrs} forceRefresh={props.forceRefresh} />}
-        <Chip
-          sx={{ background: '#e7f2ff', color: '#022D6D', alignSelf: 'flex-start' }}
-          icon={<LightbulbIcon style={{ color: '#022D6D' }} />}
-          label={`By ${solutionAuthors.join(', ')}`}
-        />
+        <SolutionAuthorsChip solutionAuthors={solutionAuthors} />
         {editing ? (
           <SolutionEditor
             problem={props.problem}
