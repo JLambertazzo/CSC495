@@ -10,7 +10,7 @@ import {
   Divider,
   Button,
 } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { ProblemCard } from '@/components/course-page/problem-card'
@@ -62,6 +62,15 @@ export const ProblemPage: React.FC = () => {
     isInstructor,
   ])
 
+  const counts = useCallback(
+    (): Record<ProblemStatus, number> => ({
+      [ProblemStatus.Review]: reviewProblems?.length ?? 0,
+      [ProblemStatus.Posted]: postedProblems?.length ?? 0,
+      [ProblemStatus.Endorsed]: endorsedProblems?.length ?? 0,
+    }),
+    [reviewProblems, endorsedProblems, postedProblems]
+  )
+
   const getInProgressTabId = () => (isInstructor ? 1 : 0)
   const getEndorsedTabId = () => getInProgressTabId() + 1
 
@@ -98,15 +107,19 @@ export const ProblemPage: React.FC = () => {
             aria-label="problem type tabs"
           >
             {isInstructor && (
-              <Tab label="Review" id="tab-review" aria-controls="simple-tabpanel-0" />
+              <Tab
+                label={`Review (${counts()[ProblemStatus.Review]})`}
+                id="tab-review"
+                aria-controls="simple-tabpanel-0"
+              />
             )}
             <Tab
-              label="In Progress"
+              label={`In Progress (${counts()[ProblemStatus.Posted]})`}
               id="tab-in-progress"
               aria-controls={`simple-tabpanel-${getInProgressTabId()}`}
             />
             <Tab
-              label="Endorsed"
+              label={`Endorsed (${counts()[ProblemStatus.Endorsed]})`}
               id="tab-endorsed"
               aria-controls={`simple-tabpanel-${getEndorsedTabId()}`}
             />
