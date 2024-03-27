@@ -28,6 +28,10 @@ const PrCard = (props: {
   forceRefresh: VoidFunction
 }) => {
   const { user } = useAuth()
+
+  // Temporarily set to 1 for the demo. TODO: Set this to 5
+  const numApprovalsRequired = 1
+
   const username = useMemo(() => user?.username ?? '', [user?.username])
 
   const didUserUpvote = useMemo(
@@ -70,7 +74,7 @@ const PrCard = (props: {
       </CardContent>
       <CardActions>
         {props.byUser ? (
-          <Button disabled={props.pr.upvoters.length < 10} onClick={handleMerge}>
+          <Button disabled={props.pr.upvoters.length < numApprovalsRequired} onClick={handleMerge}>
             Merge
           </Button>
         ) : (
@@ -82,7 +86,9 @@ const PrCard = (props: {
             </IconButton>
           </>
         )}
-        <Typography>{props.pr.upvoters.length}/10 Approvals</Typography>
+        <Typography>
+          {props.pr.upvoters.length}/{numApprovalsRequired} Approvals
+        </Typography>
       </CardActions>
     </Card>
   )
