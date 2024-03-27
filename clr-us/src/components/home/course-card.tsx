@@ -5,12 +5,13 @@ import Typography from '@mui/material/Typography'
 import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { RouteList } from '@/enum'
 import { ICourse } from '@/types'
 
 export const CourseCard = (props: { course: ICourse }) => {
   const navigate = useNavigate()
   const handleClick = () => {
-    navigate(`/${props.course.oid}/learn`)
+    navigate(`/${props.course.oid}/${RouteList.Problems}`)
   }
 
   return (

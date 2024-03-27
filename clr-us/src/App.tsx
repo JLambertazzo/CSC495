@@ -28,22 +28,22 @@ function App() {
               <Route path="/" element={<Home />} />
               {/* In the future, the id should be replaced by something that makes sense like csc373w24 */}
               <Route path="/:id" element={<LearnPage />} />
-              <Route path={`/:id/${RouteList.Learn}`} element={<LearnPage />} />
+              <Route path={`/:id/${RouteList.Problems}`} element={<LearnPage />} />
               {(Object.values(ProblemRoutes) as Array<ProblemRoutes>).map((value) => (
                 <>
                   <Route
                     key={value}
-                    path={`/:id/${RouteList.Learn}/${value}`}
+                    path={`/:id/${RouteList.Problems}/${value}`}
                     element={<ProblemPage />}
                   />
                   <Route
                     key={value}
-                    path={`/:id/${RouteList.Learn}/${value}/${RouteList.Post}`}
+                    path={`/:id/${RouteList.Problems}/${value}/${RouteList.Post}`}
                     element={<PostProblem />}
                   />
                   <Route
                     key={value}
-                    path={`/:id/${RouteList.Learn}/${value}/:problemUuid`}
+                    path={`/:id/${RouteList.Problems}/${value}/:problemUuid`}
                     element={<ViewProblem />}
                   />
                 </>

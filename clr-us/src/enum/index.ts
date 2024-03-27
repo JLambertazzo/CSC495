@@ -1,5 +1,5 @@
 export enum RouteList {
-  Learn = 'learn',
+  Problems = 'problems',
   Quizzes = 'quizzes',
   Post = 'post',
 }

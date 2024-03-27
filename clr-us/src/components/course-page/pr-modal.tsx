@@ -121,7 +121,7 @@ export const PrModal = (props: {
       {props.prs.length > 0 && (
         <Button type="button" sx={{ width: 'max-content' }} onClick={() => setOpen(true)}>
           <Typography variant={'caption'} sx={{ textDecoration: 'underline' }}>
-            {props.prs.length} Suggested Edits
+            {props.prs.length} Suggested {props.prs.length > 1 ? 'Edits' : 'Edit'}
           </Typography>
         </Button>
       )}

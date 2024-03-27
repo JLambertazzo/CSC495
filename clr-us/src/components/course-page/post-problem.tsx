@@ -67,7 +67,7 @@ export const PostProblem: React.FC = () => {
               message: 'Success! Your CLRS problem is now under review.',
               severity: 'success',
             })
-            navigate(`/${course}/${RouteList.Learn}/${problemType.toLowerCase()}`)
+            navigate(`/${course}/${RouteList.Problems}/${problemType.toLowerCase()}`)
           })
           .catch(() =>
             notify({ message: 'Error: failed to create new problem', severity: 'error' })
@@ -80,7 +80,7 @@ export const PostProblem: React.FC = () => {
               message: 'Success! Your new problem is now under review.',
               severity: 'success',
             })
-            navigate(`/${course}/${RouteList.Learn}/${problemType.toLowerCase()}`)
+            navigate(`/${course}/${RouteList.Problems}/${problemType.toLowerCase()}`)
           })
           .catch(() =>
             notify({ message: 'Error: failed to create new problem', severity: 'error' })

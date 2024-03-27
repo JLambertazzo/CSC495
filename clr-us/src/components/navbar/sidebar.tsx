@@ -109,7 +109,7 @@ export const Sidebar: React.FC = () => {
           <Stack>
             <List component="nav">
               <Divider />
-              <Tab route={RouteList.Learn} text={'Learn'} icon={<SchoolIcon />} />
+              <Tab route={RouteList.Problems} text={'Problems'} icon={<SchoolIcon />} />
               <Divider />
               <Tab route={RouteList.Quizzes} text={'Quizzes'} icon={<QuizIcon />} />
             </List>
